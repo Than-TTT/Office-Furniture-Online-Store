@@ -1,93 +1,45 @@
 package model;
 
-import jakarta.persistence.*;
-import java.math.BigDecimal;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 @Entity
-@Table(name = "Product")
+@Table(name = "product")
+@NamedQuery(name = "product.findAll", query = "SELECT p FROM Product p")
 public class Product {
-    
-    @Id
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_id")
+    @Column(name = "productId")
     private int productId;
-    
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "NVARCHAR(200) NOT NULL")
     private String name;
-    
-    @Column(name = "price")
-    private BigDecimal price;
-    
-    @Column(name = "material")
-    private String material;
-    
-    @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
-    private String description;
-    
-    @Column(name = "category_id")
-    private Integer categoryId;
-    
-    @ManyToOne
-    @JoinColumn(name = "category_id", insertable = false, updatable = false)
+
+    @Column(name = "descript", columnDefinition = "TEXT")
+    private String descript;
+
+    @Column(name = "isDelete", columnDefinition = "BIT")
+    private boolean isDelete;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<ProductType> productTypes;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<ProductImage> productImages;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "categoryId", referencedColumnName = "categoryId")
     private Category category;
 
-    // Constructors
-    public Product() {}
-
-    // Getters & Setters
-    public int getProductId() {
-        return productId;
-    }
-
-    public void setProductId(int productId) {
-        this.productId = productId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public String getMaterial() {
-        return material;
-    }
-
-    public void setMaterial(String material) {
-        this.material = material;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Integer getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    private List<Wishlist> wishlists;
 }
