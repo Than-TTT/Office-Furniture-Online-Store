@@ -3,18 +3,26 @@ package controller.marketing.Campain;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import model.*;
 import service.*;
+import util.FileUploadUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 5 * 1024 * 1024,
+        maxRequestSize = 5 * 1024 * 1024
+)
 @WebServlet(urlPatterns = "/admin/campaign/editCampaign")
 public class UpdateController extends HttpServlet {
     private IMarketingCampaignService marketingCampaignService = new MarketingCampaignServiceImpl();
@@ -36,11 +44,26 @@ public class UpdateController extends HttpServlet {
         List<Voucher> vouchers = new ArrayList<>();
         vouchers = createVouchers(vouchers);
         request.setAttribute("vouchers",vouchers);
-        // Gửi giá trị vào trang editVoucherPrice.jsp
-        request.setAttribute("content", content);
-        request.setAttribute("campaignId", campaingID);
-        if(image != null && !Objects.equals(image, "Rong"))
-            request.setAttribute("image",image);
+        
+        // Fetch campaign details if campaignId is provided
+        if (campaingID != null) {
+            MarketingCampaign campaign = marketingCampaignService.findByID(campaingID);
+            if (campaign != null) {
+                request.setAttribute("content", campaign.getContent());
+                request.setAttribute("campaignId", campaign.getCampaignId());
+                
+                // Get the first image if available
+                if (campaign.getCampaignImages() != null && !campaign.getCampaignImages().isEmpty()) {
+                    request.setAttribute("image", campaign.getCampaignImages().get(0).getImagePath());
+                }
+            }
+        } else {
+            // Fallback to request parameters if campaignId not in URL
+            request.setAttribute("content", content);
+            request.setAttribute("campaignId", campaingID);
+            if(image != null && !Objects.equals(image, "Rong"))
+                request.setAttribute("image", image);
+        }
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/admin/views/editCampaign.jsp");
         dispatcher.forward(request, response);
@@ -56,7 +79,6 @@ public class UpdateController extends HttpServlet {
             // Lấy thông tin
             Long campaingID = Long.parseLong(request.getParameter("campaignId"));
             String content = request.getParameter("content");
-            String image = request.getParameter("image");
 
             // Tạo đối tượng Campaign
             MarketingCampaign campaign = marketingCampaignService.findByID(campaingID);
@@ -96,42 +118,30 @@ public class UpdateController extends HttpServlet {
                 }
             }
 
-            if(request.getParameter("image") != null ) {
-                ICampaignImageService campaignImageService = new CampaignImageServiceImpl();
-                CampaignImage testDaTontai = campaignImageService.finByPath(image);
-
-                if (campaign.getCampaignImages() != null && campaign.getCampaignImages().size() > 0) {
-                    // remove existing links
-                    for(CampaignImage campaignImage : new ArrayList<>(campaign.getCampaignImages()))
-                    {
-                        campaignImage.setMarketingCampaign(null);
-                        campaignImageService.update(campaignImage);
+            // Handle file upload
+            Part filePart = request.getPart("campaignImage");
+            if (filePart != null && filePart.getSize() > 0) {
+                String uploadBasePath = getServletContext().getRealPath("");
+                String imagePath = FileUploadUtil.uploadFile(filePart, uploadBasePath);
+                
+                if (imagePath != null && !imagePath.isEmpty()) {
+                    ICampaignImageService campaignImageService = new CampaignImageServiceImpl();
+                    
+                    // Delete old images
+                    if (campaign.getCampaignImages() != null && !campaign.getCampaignImages().isEmpty()) {
+                        for (CampaignImage oldImage : new ArrayList<>(campaign.getCampaignImages())) {
+                            FileUploadUtil.deleteFile(oldImage.getImagePath(), uploadBasePath);
+                            oldImage.setMarketingCampaign(null);
+                            campaignImageService.update(oldImage);
+                        }
+                        campaign.getCampaignImages().clear();
                     }
-                    campaign.getCampaignImages().clear();
-
-                    if(testDaTontai != null)
-                    {
-                        testDaTontai.setMarketingCampaign(campaign);
-                        campaignImageService.update(testDaTontai);
-                    } else {
-                        CampaignImage imagetaomoi = new CampaignImage();
-                        imagetaomoi.setImagePath(image);
-                        imagetaomoi.setMarketingCampaign(campaign);
-                        campaignImageService.addImage(imagetaomoi);
-                    }
-                }
-                else {
-                    if(testDaTontai != null)
-                    {
-                        testDaTontai.setMarketingCampaign(campaign);
-                        campaignImageService.update(testDaTontai);
-                    }
-                    else {
-                        CampaignImage image1 = new CampaignImage();
-                        image1.setImagePath(image);
-                        image1.setMarketingCampaign(campaign);
-                        campaignImageService.addImage(image1);
-                    }
+                    
+                    // Add new image
+                    CampaignImage newImage = new CampaignImage();
+                    newImage.setImagePath(imagePath);
+                    newImage.setMarketingCampaign(campaign);
+                    campaignImageService.addImage(newImage);
                 }
             }
 
@@ -139,9 +149,9 @@ public class UpdateController extends HttpServlet {
             // Redirect hoặc thông báo thành công
             response.sendRedirect(request.getContextPath() + "/admin/marketing");
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "Failed to update the campaign. Please try again.");
+            request.setAttribute("errorMessage", "Failed to update the campaign. Please try again. Error: " + e.getMessage());
             request.getRequestDispatcher("/errorPage.jsp").forward(request, response);
         }
 

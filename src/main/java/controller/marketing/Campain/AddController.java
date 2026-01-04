@@ -2,17 +2,25 @@
 package controller.marketing.Campain;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import model.CampaignImage;
 import model.MarketingCampaign;
 import model.Voucher;
 import service.*;
+import util.FileUploadUtil;
 
 import java.io.IOException;
 
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 5 * 1024 * 1024,
+        maxRequestSize = 5 * 1024 * 1024
+)
 @WebServlet(urlPatterns = "/admin/campaign/addCampaign")
 public class AddController extends HttpServlet {
     private IMarketingCampaignService marketingCampaignService = new MarketingCampaignServiceImpl();
@@ -65,25 +73,25 @@ public class AddController extends HttpServlet {
                 persisted = campaign;
             }
 
-            String image = request.getParameter("image");
-            if (image != null && !image.isEmpty()) {
-                ICampaignImageService campaignImageService = new CampaignImageServiceImpl();
-                CampaignImage existing = campaignImageService.finByPath(image);
-                if (existing != null) {
-                    existing.setMarketingCampaign(persisted);
-                    campaignImageService.update(existing);
-                } else {
-                    CampaignImage image1 = new CampaignImage();
-                    image1.setImagePath(image);
-                    image1.setMarketingCampaign(persisted);
-                    campaignImageService.addImage(image1);
+            // Handle file upload
+            Part filePart = request.getPart("campaignImage");
+            if (filePart != null && filePart.getSize() > 0) {
+                String uploadBasePath = getServletContext().getRealPath("");
+                String imagePath = FileUploadUtil.uploadFile(filePart, uploadBasePath);
+                
+                if (imagePath != null && !imagePath.isEmpty()) {
+                    ICampaignImageService campaignImageService = new CampaignImageServiceImpl();
+                    CampaignImage campaignImage = new CampaignImage();
+                    campaignImage.setImagePath(imagePath);
+                    campaignImage.setMarketingCampaign(persisted);
+                    campaignImageService.addImage(campaignImage);
                 }
             }
 
             response.sendRedirect(request.getContextPath() + "/admin/marketing");
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "Failed to add the campaign. Please try again.");
+            request.setAttribute("errorMessage", "Failed to add the campaign. Please try again. Error: " + e.getMessage());
             request.getRequestDispatcher("/errorPage.jsp").forward(request, response);
         }
     }

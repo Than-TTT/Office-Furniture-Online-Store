@@ -81,7 +81,7 @@
                 <td>
                     <c:choose>
                         <c:when test="${not empty campaign.campaignImages}">
-                            ${campaign.campaignImages[0].imagePath}
+                            <img src="${pageContext.request.contextPath}/${campaign.campaignImages[0].imagePath}" alt="Campaign image" style="max-width: 100px; max-height: 100px; object-fit: contain;">
                         </c:when>
                         <c:otherwise>
                             No Image
@@ -92,15 +92,6 @@
                     <div class="d-flex justify-content-center">
                         <form action="${pageContext.request.contextPath}/admin/campaign/editCampaign" method="get" style="margin-right: 5px;">
                             <input type="hidden" name="campaignId" value="${campaign.campaignId}">
-                            <input type="hidden" name="content" value="${campaign.content}">
-                            <c:choose>
-                                <c:when test="${not empty campaign.campaignImages}">
-                                    <input type="hidden" name="image" value="${campaign.campaignImages[0].imagePath}">
-                                </c:when>
-                                <c:otherwise>
-                                    <input type="hidden" name="image" value="Rong">
-                                </c:otherwise>
-                            </c:choose>
                             <button type="submit" class="btn btn-warning btn-sm">Edit</button>
                         </form>
 
@@ -130,7 +121,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="${pageContext.request.contextPath}/admin/campaign/addCampaign" method="post">
+                    <form action="${pageContext.request.contextPath}/admin/campaign/addCampaign" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="content" class="form-label">Content</label>
                             <textarea class="form-control" id="content" name="content" required></textarea>
@@ -145,8 +136,9 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="image" class="form-label">Campaign Images</label>
-                            <input type="text" class="form-control" id="image" name="image">
+                            <label for="campaignImage" class="form-label">Campaign Image</label>
+                            <input type="file" class="form-control" id="campaignImage" name="campaignImage" accept="image/*">
+                            <small class="text-muted">Upload an image for the campaign (JPG, PNG, GIF)</small>
                         </div>
                         <button type="submit" class="btn btn-primary">Add Campaign</button>
                     </form>

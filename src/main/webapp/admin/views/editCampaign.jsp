@@ -47,6 +47,7 @@
             id="editCampaignForm"
             action="${pageContext.request.contextPath}/admin/campaign/editCampaign"
             method="post"
+            enctype="multipart/form-data"
             novalidate
           >
             <input type="hidden" name="campaignId" value="${campaignId}" />
@@ -71,14 +72,21 @@ ${content}</textarea
             </div>
 
             <div class="mb-3">
-              <label for="image" class="form-label">Campaign Image</label>
+              <label for="campaignImage" class="form-label">Campaign Image</label>
+              <c:if test="${not empty image}">
+                <div class="mb-2">
+                  <p class="text-muted">Current image:</p>
+                  <img src="${pageContext.request.contextPath}/${image}" alt="Current campaign image" style="max-width: 200px; max-height: 200px;">
+                </div>
+              </c:if>
               <input
-                type="text"
+                type="file"
                 class="form-control"
-                id="image"
-                name="image"
-                value="${image}"
+                id="campaignImage"
+                name="campaignImage"
+                accept="image/*"
               />
+              <small class="text-muted">Upload a new image to replace the current one (JPG, PNG, GIF)</small>
             </div>
 
             <div class="d-flex justify-content-between">
