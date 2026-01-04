@@ -95,10 +95,7 @@
                             <button type="submit" class="btn btn-warning btn-sm">Edit</button>
                         </form>
 
-                        <form action="${pageContext.request.contextPath}/admin/campaign/deleteCampaign" method="post">
-                            <input type="hidden" name="campaignId" value="${campaign.campaignId}">
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this campaign?');">Delete</button>
-                        </form>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteCampaignModal" onclick="setDeleteCampaignId(${campaign.campaignId})">Delete</button>
                     </div>
                 </td>
             </tr>
@@ -175,29 +172,23 @@
             <tr>
                 <td><%= voucher.getVoucherId() %></td>
                 <td><%= voucher.getCode() %></td>
-                <td><%= voucher.getDiscount() %></td>
+                <td><%= voucher.getDiscount() %>%</td>
                 <td><%= voucher.getDateStart() %></td>
                 <td><%= voucher.getDateEnd() %></td>
                 <td>
-                    <div class="d-flex justify-content-center">
+                    <div class="d-flex justify-content-center gap-2">
                         <% if (isVoucherByPrice) { %>
-                            <form action="${pageContext.request.contextPath}/admin/voucher/editPrice" method="get" style="margin-right:5px;">
+                            <form action="${pageContext.request.contextPath}/admin/voucher/editPrice" method="get">
                                 <input type="hidden" name="voucherId" value="<%= voucher.getVoucherId() %>">
                                 <button type="submit" class="btn btn-warning btn-sm">Edit</button>
                             </form>
-                            <form action="${pageContext.request.contextPath}/admin/voucher/deletePrice" method="post">
-                                <input type="hidden" name="voucherId" value="<%= voucher.getVoucherId() %>">
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete voucher?');">Delete</button>
-                            </form>
+                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteVoucherModal" onclick="setDeleteVoucherId('<%= voucher.getVoucherId() %>', 'price', '<%= voucher.getCode() %>')">Delete</button>
                         <% } else { %>
-                            <form action="${pageContext.request.contextPath}/admin/voucher/editProduct" method="get" style="margin-right:5px;">
+                            <form action="${pageContext.request.contextPath}/admin/voucher/editProduct" method="get">
                                 <input type="hidden" name="voucherId" value="<%= voucher.getVoucherId() %>">
                                 <button type="submit" class="btn btn-warning btn-sm">Edit</button>
                             </form>
-                            <form action="${pageContext.request.contextPath}/admin/voucher/deleteProduct" method="post">
-                                <input type="hidden" name="voucherId" value="<%= voucher.getVoucherId() %>">
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete voucher?');">Delete</button>
-                            </form>
+                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteVoucherModal" onclick="setDeleteVoucherId('<%= voucher.getVoucherId() %>', 'product', '<%= voucher.getCode() %>')">Delete</button>
                         <% } %>
                     </div>
                 </td>
@@ -238,8 +229,11 @@
                             <input type="text" class="form-control" id="code" name="code" required>
                         </div>
                         <div class="mb-3">
-                            <label for="discount" class="form-label">Discount (%)</label>
-                            <input type="number" class="form-control" id="discount" name="discount" step="0.01" required>
+                            <label for="discount" class="form-label">Discount</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="discount" name="discount" step="0.01" required>
+                                <span class="input-group-text">%</span>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="dateStart" class="form-label">Start Date</label>
@@ -299,7 +293,105 @@
         voucherTypeEl.addEventListener("change", updateFields);
         document.addEventListener("DOMContentLoaded", updateFields);
     })();
+
+    // Delete confirmation modals
+    let deleteCampaignId = null;
+    let deleteVoucherId = null;
+    let deleteVoucherType = null;
+
+    function setDeleteCampaignId(id) {
+        deleteCampaignId = id;
+        document.getElementById('campaignDeleteConfirmContent').innerHTML = 'Are you sure you want to delete this campaign? This action cannot be undone.';
+    }
+
+    function setDeleteVoucherId(id, type, code) {
+        deleteVoucherId = id;
+        deleteVoucherType = type;
+        document.getElementById('voucherDeleteConfirmContent').innerHTML = `Are you sure you want to delete the voucher <strong>${code}</strong>? This action cannot be undone.`;
+    }
+
+    function confirmDeleteCampaign() {
+        if (deleteCampaignId !== null) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '${pageContext.request.contextPath}/admin/campaign/deleteCampaign';
+            
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'campaignId';
+            input.value = deleteCampaignId;
+            
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    function confirmDeleteVoucher() {
+        if (deleteVoucherId !== null && deleteVoucherType !== null) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            const endpoint = deleteVoucherType === 'price' ? 'deletePrice' : 'deleteProduct';
+            form.action = '${pageContext.request.contextPath}/admin/voucher/' + endpoint;
+            
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'voucherId';
+            input.value = deleteVoucherId;
+            
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
 </script>
+
+<!-- Delete Campaign Confirmation Modal -->
+<div class="modal fade" id="deleteCampaignModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger bg-opacity-10 border-danger">
+                <h5 class="modal-title text-danger">
+                    <i class="bx bx-trash-alt"></i> Delete Campaign
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="campaignDeleteConfirmContent"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDeleteCampaign()">
+                    <i class="bx bx-trash-alt"></i> Delete Campaign
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Voucher Confirmation Modal -->
+<div class="modal fade" id="deleteVoucherModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger bg-opacity-10 border-danger">
+                <h5 class="modal-title text-danger">
+                    <i class="bx bx-trash-alt"></i> Delete Voucher
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="voucherDeleteConfirmContent"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDeleteVoucher()">
+                    <i class="bx bx-trash-alt"></i> Delete Voucher
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </div>
 </div>
 </div>

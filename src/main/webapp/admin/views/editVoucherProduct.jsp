@@ -63,17 +63,20 @@
 
             <div class="mb-3">
               <label for="editVoucherDiscountProduct" class="form-label"
-                >Discount (%)</label
+                >Discount</label
               >
-              <input
-                type="number"
-                class="form-control"
-                id="editVoucherDiscountProduct"
-                name="editVoucherDiscountProduct"
-                step="0.01"
-                value="${editVoucherDiscountProduct != null ? editVoucherDiscountProduct : ''}"
-                required
-              />
+              <div class="input-group">
+                <input
+                  type="number"
+                  class="form-control"
+                  id="editVoucherDiscountProduct"
+                  name="editVoucherDiscountProduct"
+                  step="0.01"
+                  value="${editVoucherDiscountProduct != null ? editVoucherDiscountProduct : ''}"
+                  required
+                />
+                <span class="input-group-text">%</span>
+              </div>
             </div>
 
             <div class="row g-2">
