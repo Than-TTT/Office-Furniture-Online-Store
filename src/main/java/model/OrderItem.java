@@ -1,10 +1,13 @@
 package model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "OrderItem")
+@Data
 public class OrderItem {
     
     @Id
@@ -25,7 +28,12 @@ public class OrderItem {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id", insertable = false, updatable = false)
     private Product product;
-    
+
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "typeId", referencedColumnName = "typeId", nullable = false)
+    private ProductType productType;
+
     @Column(name = "quantity")
     private int quantity;
     
@@ -50,6 +58,10 @@ public class OrderItem {
 
     public void setOrderId(int orderId) {
         this.orderId = orderId;
+    }
+
+    public ProductType getProductType() {
+        return this.productType;
     }
 
     public Order getOrder() {
