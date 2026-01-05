@@ -1,0 +1,72 @@
+@charset "UTF-8";
+.accordion-button {
+    cursor: default !important;
+    pointer-events: none;
+}
+
+.accordion-button::after {
+    display: none !important;
+}
+.btn:not(:disabled):not(.disabled) {
+    cursor: pointer;
+    width: -webkit-fill-available !important;
+}
+
+.container_detail_product {
+    display: flex;               /* Make it a flex container */
+    justify-content: center;     /* Center content horizontally */
+    align-items: center;         /* Center content vertically */
+    flex-direction: column;      /* Stack the children vertically */
+    padding: 20px;               /* Optional, adjust padding as needed */
+    min-height: 100vh;           /* Ensure it takes at least the full height of the viewport */
+    background-color: #f9f9f9;   /* Set a background color (optional) */
+}
+
+.row_detail_product {
+    display: flex;
+    justify-content: space-between;  /* Ensure space between product image and details */
+    align-items: flex-start;         /* Align items at the start of the container */
+    width: 100%;                     /* Full width for the row */
+    max-width: 1200px;               /* Optional, max width for the row */
+}
+
+.col-lg-6, .col-md-6 {
+    flex: 1;                         /* Make each column take equal space */
+    padding: 10px;                   /* Optional, adjust padding */
+}
+
+.product__details__pic {
+    display: flex;
+    justify-content: center;         /* Center the image */
+    align-items: center;             /* Center vertically */
+}
+
+.product__details__pic__item {
+    max-width: 100%;                 /* Ensure image doesn't overflow */
+    max-height: 500px;               /* Limit image height */
+}
+
+.product__details__text {
+    display: flex;
+    flex-direction: column;          /* Stack text elements vertically */
+    align-items: flex-start;         /* Align text to the left */
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional, add shadow for depth */
+}
+
+.product__details__tab {
+    margin-top: 30px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional, add shadow for depth */
+}
+
+.product__details__tab .nav-tabs {
+    margin-bottom: 20px;   /* Space between tabs and content */
+}
+
+.product__details__tab .tab-content {
+    padding: 20px;
+}
