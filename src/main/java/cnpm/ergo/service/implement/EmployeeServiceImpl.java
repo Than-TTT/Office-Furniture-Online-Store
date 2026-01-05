@@ -2,90 +2,120 @@ package cnpm.ergo.service.implement;
 
 import cnpm.ergo.DAO.implement.EmployeeDAOImpl;
 import cnpm.ergo.DAO.interfaces.IEmployeeDAO;
+import cnpm.ergo.configs.JPAConfig;
 import cnpm.ergo.entity.Employee;
+import cnpm.ergo.entity.Role;
 import cnpm.ergo.service.interfaces.IEmployeeService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 
 import java.util.List;
 
 public class EmployeeServiceImpl implements IEmployeeService {
-	private IEmployeeDAO employeeDAO = new EmployeeDAOImpl();
-    @Override
-    public List<Employee> findAll(int pageNo, int pageSize) {
-        // Create a new instance of the EmployeeDAOImpl
-        IEmployeeDAO employeeDAO = new EmployeeDAOImpl();
-        // Call the findAll method to fetch all employees
-        return employeeDAO.findAll(pageNo, pageSize);
-    }
+    
+    // Khai báo duy nhất một thực thể DAO để dùng chung, tránh lãng phí bộ nhớ
+    private final IEmployeeDAO employeeDAO = new EmployeeDAOImpl();
+
     @Override
     public void insert(Employee employee) {
-        // Create a new instance of the EmployeeDAOImpl
-        IEmployeeDAO employeeDAO = new EmployeeDAOImpl();
-        // Call the insert method of EmployeeDAOImpl to save the employee
+        EntityManager em = JPAConfig.getEntityManager();
+        try {
+            // Bước 1: Chỉ lấy Role ra (Không mở Transaction ở đây để tránh treo)
+            Role staffRole = null;
+            try {
+                staffRole = em.createQuery("SELECT r FROM Role r WHERE r.roleName = :name", Role.class)
+                        .setParameter("name", "Staff")
+                        .getSingleResult();
+            } catch (NoResultException nre) {
+                System.err.println("LỖI: Không tìm thấy Role 'Staff' trong Database!");
+            }
+
+            // Bước 2: Gán Role cho nhân viên
+            if (staffRole != null) {
+                employee.setRole(staffRole);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Bước 3: ĐÓNG EntityManager ngay lập tức để giải phóng Connection
+            if (em.isOpen()) {
+                em.close();
+            }
+        }
+
+        // Bước 4: Sau khi đã đóng EM ở Service, mới gọi DAO để thực hiện Insert
+        // Việc này giúp DAO tự mở Transaction riêng mà không bị xung đột
         employeeDAO.insert(employee);
     }
 
     @Override
+    public List<Employee> findAll(int pageNo, int pageSize) {
+        return employeeDAO.findAll(pageNo, pageSize);
+    }
+
+    @Override
     public void update(Employee employee) {
-        // Create a new instance of the EmployeeDAOImpl
-        IEmployeeDAO employeeDAO = new EmployeeDAOImpl();
-        // Call the update method of EmployeeDAOImpl to update the employee details
         employeeDAO.update(employee);
     }
 
     @Override
     public void delete(int employeeId) {
-        // Create a new instance of the EmployeeDAOImpl
-        IEmployeeDAO employeeDAO = new EmployeeDAOImpl();
-        // Call the delete method of EmployeeDAOImpl to remove the employee by id
-        employeeDAO.delete(employeeId);
+        EntityManager em = JPAConfig.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Employee employee = em.find(Employee.class, employeeId);
+            if (employee != null) {
+                em.remove(employee);
+                System.out.println("DAO: Đã xóa nhân viên ID " + employeeId);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
     }
-
     @Override
     public Employee findById(int employeeId) {
-        // Create a new instance of the EmployeeDAOImpl
-        IEmployeeDAO employeeDAO = new EmployeeDAOImpl();
-        // Call the findById method to fetch an employee by their ID
         return employeeDAO.findById(employeeId);
     }
 
     @Override
     public List<Employee> findAll() {
-        // Create a new instance of the EmployeeDAOImpl
-        IEmployeeDAO employeeDAO = new EmployeeDAOImpl();
-        // Call the findAll method to fetch all employees
         return employeeDAO.findAll();
     }
 
     @Override
     public List<Employee> searchByName(String name) {
-        // Create a new instance of the EmployeeDAOImpl
-        IEmployeeDAO employeeDAO = new EmployeeDAOImpl();
-        // Call the searchByName method to fetch employees whose name contains the search string
         return employeeDAO.searchByName(name);
     }
 
     @Override
     public int count() {
-        // Create a new instance of the EmployeeDAOImpl
-        IEmployeeDAO employeeDAO = new EmployeeDAOImpl();
-        // Call the count method to return the number of employees in the database
         return employeeDAO.count();
     }
-	@Override
-	public boolean login(String email, String password) {
-		Employee employee = employeeDAO.getEmployee(email);
+
+    @Override
+    public boolean login(String email, String password) {
+        Employee employee = employeeDAO.getEmployee(email);
         if (employee != null) {
+            // Match password thô (Bạn nên cân nhắc dùng BCrypt sau này)
             return employee.getPassword().equals(password);
         }
         return false;
-	}
-	@Override
-	public Employee getEmployee(String email) {
-		 return employeeDAO.getEmployee(email);
-	}
+    }
+
+    @Override
+    public Employee getEmployee(String email) {
+        return employeeDAO.getEmployee(email);
+    }
+
     public static void main(String[] args) {
-        EmployeeServiceImpl employeeService = new EmployeeServiceImpl();
-        if (employeeService.login("anhQuang@gmail.com", "12345")) {
+        IEmployeeService employeeService = new EmployeeServiceImpl();
+        // Kiểm tra logic login
+        if (employeeService.login("admin@gmail.com", "12345")) {
             System.out.println("Login successful.");
         } else {
             System.out.println("Login failed.");

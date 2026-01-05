@@ -31,6 +31,14 @@ public class RegisterController extends HttpServlet {
         String email = request.getParameter("email");
         String phone = request.getParameter("phonenumber");
         String password = request.getParameter("password");
+        
+        
+//        System.out.println("======= DEBUG CONTROLLER =======");
+//        System.out.println("Name nhận được: " + name);
+//        System.out.println("Email nhận được: " + email);
+//        System.out.println("Phone nhận được: " + phone);
+//        System.out.println("Password nhận được: " + (password != null ? "Đã có" : "Null"));
+//        System.out.println("================================");
 
         try {
             // Kiểm tra dữ liệu đầu vào

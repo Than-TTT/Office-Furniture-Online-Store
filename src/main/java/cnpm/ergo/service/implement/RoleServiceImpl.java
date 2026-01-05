@@ -39,14 +39,22 @@ public class RoleServiceImpl implements IRoleService {
     }
 
     public static void main(String[] args) {
-        IRoleService IRoleService = new RoleServiceImpl();
-        Role role = new Role();
-        role.setRoleName("Admin");
-        IRoleService.addRole(role);
+        IRoleService roleService = new RoleServiceImpl();
+        
+        // Tạo mảng tên các Role cần có
+        String[] names = {"Admin", "Staff", "Customer"};
+        
+        for (String name : names) {
+            Role r = new Role();
+            r.setRoleName(name);
+            roleService.addRole(r);
+        }
 
-        List<Role> roles = IRoleService.getAllRoles();
+        // In ra để xác nhận ID
+        System.out.println("--- DANH SÁCH ROLE TRONG DB ---");
+        List<Role> roles = roleService.getAllRoles();
         for (Role r : roles) {
-            System.out.println(r.getRoleId() + " - " + r.getRoleName());
+            System.out.println("ID: " + r.getRoleId() + " | Tên: " + r.getRoleName());
         }
     }
 

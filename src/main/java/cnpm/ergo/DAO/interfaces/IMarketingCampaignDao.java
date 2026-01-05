@@ -7,7 +7,7 @@ import cnpm.ergo.entity.MarketingCampaign;
 public interface IMarketingCampaignDao {
 	void insert(MarketingCampaign campaignEntity);
 	void update(MarketingCampaign campaignEntity);
-	void delete(MarketingCampaign campaignEntity);
+	void delete(Long id);
 //	void delete(Long campaignId);
 	List<MarketingCampaign> findAll();
 	MarketingCampaign findById(Long id);

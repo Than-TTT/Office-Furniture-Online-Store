@@ -31,7 +31,7 @@ public class MarketingCampaign implements Serializable {
     @Column(name = "is_delete", nullable = false)
     private Boolean isDelete = false;
 
-    @OneToMany(mappedBy = "marketingCampaign", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "marketingCampaign", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CampaignImage> campaignImages;
 
 }

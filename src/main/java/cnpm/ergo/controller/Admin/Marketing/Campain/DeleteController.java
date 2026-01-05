@@ -1,49 +1,37 @@
 package cnpm.ergo.controller.Admin.Marketing.Campain;
 
-import cnpm.ergo.entity.MarketingCampaign;
-import cnpm.ergo.entity.Voucher;
-import cnpm.ergo.entity.VoucherByPrice;
-import cnpm.ergo.entity.VoucherByProduct;
-import cnpm.ergo.service.implement.IVoucherByPriceServiceImpl;
-import cnpm.ergo.service.implement.IVoucherByProductServiceImpl;
+import cnpm.ergo.service.implement.CampaignImageServiceImpl;
 import cnpm.ergo.service.implement.MarketingCampaignServiceImpl;
+import cnpm.ergo.service.interfaces.ICampaignImageService;
 import cnpm.ergo.service.interfaces.IMarketingCampaignService;
-import cnpm.ergo.service.interfaces.IVoucherByPriceService;
-import cnpm.ergo.service.interfaces.IVoucherByProductService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
-import java.util.Date;
 
-@WebServlet(urlPatterns = "/admin/campaign/deleteCampaign")
+@WebServlet(urlPatterns = "/admin/campaign/delete")
 public class DeleteController extends HttpServlet {
-    private IMarketingCampaignService marketingCampaignService = new MarketingCampaignServiceImpl();
+    private IMarketingCampaignService campaignService = new MarketingCampaignServiceImpl();
+    private ICampaignImageService campaignImageService = new CampaignImageServiceImpl();
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        if (request.getSession().getAttribute("admin") == null) {
-//            response.sendRedirect(request.getContextPath() + "/admin/login");
-//            return;
-//        }
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            // Lấy thông tin
-            Long campaingID = Long.parseLong(request.getParameter("campaignId"));
-            // Tạo đối tượng Campaign
-            marketingCampaignService.deleteCampaign(marketingCampaignService.findByID(campaingID));
-            // Redirect hoặc thông báo thành công
+            String idParam = request.getParameter("id");
+            if (idParam != null) {
+                Long id = Long.parseLong(idParam);
+                
+                // 1. Xóa ảnh ở bảng con trước để không bị lỗi ràng buộc khóa ngoại (Foreign Key)
+                campaignImageService.deleteByCampaignId(id);
+                
+                // 2. Xóa campaign ở bảng cha bằng ID
+                campaignService.deleteCampaign(id);
+            }
             response.sendRedirect(request.getContextPath() + "/admin/marketing");
-
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            // Forward the error details to an error page
-            request.setAttribute("errorMessage", "Failed to delete the campaign. Please try again.");
-            request.getRequestDispatcher("/errorPage.jsp").forward(request, response);
+            response.sendRedirect(request.getContextPath() + "/admin/marketing?error=delete_failed");
         }
-
-
     }
 }

@@ -20,7 +20,7 @@ public abstract class User implements Serializable {
     @Column(name = "userId")
     private int userId;
 
-    @Column(name = "name", length = 100, unique = true)
+    @Column(name = "name", length = 100)
     private String name;
 
     @Column(name = "email", length = 100)
@@ -42,7 +42,7 @@ public abstract class User implements Serializable {
     private List<Log> logs;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "roleId", referencedColumnName = "roleId")
+    @JoinColumn(name = "roleId")
     private Role role;
 
     @Column(name = "status", length = 100)

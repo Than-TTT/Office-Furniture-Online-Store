@@ -7,6 +7,7 @@ import cnpm.ergo.DAO.interfaces.IUserDAO;
 import cnpm.ergo.entity.User;
 import cnpm.ergo.service.interfaces.ICustomerService;
 import cnpm.ergo.entity.Customer;
+import cnpm.ergo.entity.Role;
 import jakarta.persistence.EntityManager;
 import cnpm.ergo.configs.JPAConfig;
 
@@ -72,8 +73,28 @@ public class CustomerServiceImpl implements ICustomerService {
 
     @Override
     public boolean insert(Customer customer) {
-        ICustomerDAO customerDAO = new CustomerDAOImpl();
-        return customerDAO.insert(customer);
+//        ICustomerDAO customerDAO = new CustomerDAOImpl();
+//        return customerDAO.insert(customer);
+    	EntityManager em = JPAConfig.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Role customerRole = em.find(Role.class, 3); 
+            customer.setRole(customerRole);
+            customer.setStatus("Active");
+            customer.setIsDelete(false);
+
+            em.persist(customer); 
+
+            em.getTransaction().commit();
+            System.out.println("ĐĂNG KÝ THÀNH CÔNG VỚI ROLE CUSTOMER!");
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            em.close();
+        }
     }
 
     @Override
