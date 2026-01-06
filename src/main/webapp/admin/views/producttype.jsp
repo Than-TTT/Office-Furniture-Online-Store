@@ -1,18 +1,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<% request.setAttribute("pageTitle", "Product Types"); %>
+<%@ include file="/WEB-INF/includes/admin_header.jspf" %>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Product Management</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+<style>
+    .btn-group { display: flex; gap: 5px; }
+</style>
+
 <div class="container mt-4">
     <h1 class="text-center">Product Type Management</h1>
-    <style>
-        .btn-group { display: flex; gap: 5px; }
-    </style>
     <table class="table table-bordered table-hover mt-3">
         <thead class="table-dark">
         <tr>
@@ -191,7 +186,4 @@
 
 
 
-<!-- Bootstrap JS and Popper.js (required for modal functionality) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<%@ include file="/WEB-INF/includes/admin_footer.jspf" %>

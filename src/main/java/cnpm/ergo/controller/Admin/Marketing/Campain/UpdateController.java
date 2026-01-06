@@ -39,22 +39,36 @@ public class UpdateController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Lấy giá trị từ tham số của form
-        Long campaingID = null;
+        Long campaignId = null;
         try {
-            campaingID = Long.parseLong(request.getParameter("campaignId"));
+            campaignId = Long.parseLong(request.getParameter("campaignId"));
         } catch (Exception ignored) {}
-        String content = request.getParameter("content");
-        String image = request.getParameter("image");
-
+        
+        if (campaignId == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/marketing");
+            return;
+        }
+        
+        // Fetch campaign from database
+        MarketingCampaign campaign = marketingCampaignService.findByID(campaignId);
+        if (campaign == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/marketing");
+            return;
+        }
+        
+        // Get all vouchers for dropdown
         List<Voucher> vouchers = new ArrayList<>();
         vouchers = createVouchers(vouchers);
-        request.setAttribute("vouchers",vouchers);
-        // Gửi giá trị vào trang editVoucherPrice.jsp
-        request.setAttribute("content", content);
-        request.setAttribute("campaignId", campaingID);
-        if(image != null && !Objects.equals(image, "Rong"))
-            request.setAttribute("image",image);
+        request.setAttribute("vouchers", vouchers);
+        
+        // Set campaign data for the form
+        request.setAttribute("campaignId", campaign.getCampaignId());
+        request.setAttribute("content", campaign.getContent());
+        request.setAttribute("currentVoucherId", campaign.getVoucher() != null ? campaign.getVoucher().getVoucherId() : null);
+        
+        if (campaign.getCampaignImages() != null && !campaign.getCampaignImages().isEmpty()) {
+            request.setAttribute("image", campaign.getCampaignImages().get(0).getImagePath());
+        }
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/admin/views/editCampaign.jsp");
         dispatcher.forward(request, response);

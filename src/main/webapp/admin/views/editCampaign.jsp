@@ -33,7 +33,7 @@ ${content}</textarea
               <select class="form-select" id="voucherId" name="voucherId">
                 <option value="">Select a voucher</option>
                 <c:forEach var="voucher" items="${vouchers}">
-                  <option value="${voucher.voucherId}">
+                  <option value="${voucher.voucherId}" ${voucher.voucherId == currentVoucherId ? 'selected' : ''}>
                     ${voucher.code} - Discount: ${voucher.discount}%
                   </option>
                 </c:forEach>
@@ -42,6 +42,12 @@ ${content}</textarea
 
             <div class="mb-3">
               <label for="image" class="form-label">Campaign Image</label>
+              <c:if test="${not empty image}">
+                <div class="mb-2">
+                  <img src="${pageContext.request.contextPath}/${image}" alt="Current Image" style="max-width: 200px; max-height: 150px; border-radius: 4px;">
+                  <p class="text-muted small">Current image. Upload a new one to replace.</p>
+                </div>
+              </c:if>
               <input type="file" class="form-control" id="campaignImage" name="campaignImage" accept="image/*">
             </div>
 

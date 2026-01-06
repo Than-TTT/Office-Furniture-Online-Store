@@ -113,23 +113,23 @@ public class ProductDaoImpl implements IProductDao {
     @Override
 	public List<Product> findAll() {
         EntityManager em = JPAConfig.getEntityManager();
-        EntityTransaction trans = em.getTransaction();
-        trans.begin();
-        String jpql = "SELECT p FROM Product p";
-        TypedQuery<Product> query = em.createQuery(jpql, Product.class);
-        trans.commit();
-        em.close();
-        return query.getResultList(); // Lấy danh sách tất cả sản phẩm
+        try {
+            String jpql = "SELECT p FROM Product p LEFT JOIN FETCH p.category";
+            TypedQuery<Product> query = em.createQuery(jpql, Product.class);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
     }
     public List<Product> findAllAvailable() {
         EntityManager em = JPAConfig.getEntityManager();
-        EntityTransaction trans = em.getTransaction();
-        trans.begin();
-        String jpql = "SELECT p FROM Product p WHERE p.isDelete == false";
-        TypedQuery<Product> query = em.createQuery(jpql, Product.class);
-        trans.commit();
-        em.close();
-        return query.getResultList(); // Lấy danh sách tất cả sản phẩm
+        try {
+            String jpql = "SELECT p FROM Product p LEFT JOIN FETCH p.category WHERE p.isDelete = false";
+            TypedQuery<Product> query = em.createQuery(jpql, Product.class);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     @Override

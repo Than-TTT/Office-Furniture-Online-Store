@@ -28,6 +28,11 @@ public class MarketingController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Check if admin is logged in
+        if (request.getSession().getAttribute("admin") == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/login");
+            return;
+        }
 
         // Get vouchers
         List<VoucherByPrice> voucherByPriceList = voucherByPriceService.findAll();
@@ -35,7 +40,6 @@ public class MarketingController extends HttpServlet {
         List<Voucher> vouchers = new ArrayList<>();
         vouchers = createVouchers(vouchers);
 
-        // Get marketing campaigns (now returned with images loaded by DAO)
         List<MarketingCampaign> marketingCampaignList = marketingCampaignService.findAllMarketingCampaign();
 
         IProductTypeService productTypeService = new ProductTypeServiceImpl();

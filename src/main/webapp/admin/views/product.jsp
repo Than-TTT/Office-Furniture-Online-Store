@@ -1,28 +1,18 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Product & Variant Management</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .product-img { object-fit: cover; border-radius: 4px; border: 1px solid #ddd; margin-right: 5px; }
-        .modal-xl { max-width: 95%; }
-        .section-title { border-left: 4px solid #0d6efd; padding-left: 10px; margin-bottom: 20px; font-weight: bold; }
-        
-        /* Tối ưu bảng biến thể */
-        .variant-table input { min-width: 50px; text-align: center; }
-        .variant-table th, .variant-table td { vertical-align: middle; white-space: nowrap; }
-        .highlight-row { background-color: #fff3cd !important; transition: 1s; }
-        
-        /* Giảm padding cho các ô input kích thước để tiết kiệm không gian */
-        .size-input { padding: 0.25rem 0.2rem !important; font-size: 0.75rem; }
-    </style>
-</head>
-<body class="bg-light">
+<% request.setAttribute("pageTitle", "Products"); %>
+<%@ include file="/WEB-INF/includes/admin_header.jspf" %>
+
+<style>
+    .product-img { object-fit: cover; border-radius: 4px; border: 1px solid #ddd; margin-right: 5px; }
+    .modal-xl { max-width: 95%; }
+    .section-title { border-left: 4px solid #0d6efd; padding-left: 10px; margin-bottom: 20px; font-weight: bold; }
+    .variant-table input { min-width: 50px; text-align: center; }
+    .variant-table th, .variant-table td { vertical-align: middle; white-space: nowrap; }
+    .highlight-row { background-color: #fff3cd !important; transition: 1s; }
+    .size-input { padding: 0.25rem 0.2rem !important; font-size: 0.75rem; }
+</style>
 
 <div class="container mt-4">
     <h1 class="text-center mb-4 fw-bold text-dark">ERGO Admin System</h1>
@@ -245,6 +235,4 @@
     });
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<%@ include file="/WEB-INF/includes/admin_footer.jspf" %>
