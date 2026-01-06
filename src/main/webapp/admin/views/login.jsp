@@ -19,6 +19,7 @@
             flex-basis: 100%;
             min-height: 100vh;
             width: 100%;
+           justify-content: center;
         }
         .authentication-inner {
             width: 100%;
@@ -27,7 +28,7 @@
     </style>
 </head>
 <body>
-<div class="container-xxl">
+<div class="container-xxl" >
     <div class="authentication-wrapper authentication-basic container-p-y">
         <div class="authentication-inner py-4">
             <div class="card">
