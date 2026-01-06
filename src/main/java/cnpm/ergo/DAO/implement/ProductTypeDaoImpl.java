@@ -52,16 +52,18 @@ public class ProductTypeDaoImpl implements IProductType {
     public void delete(int typeId) {
         EntityManager em = JPAConfig.getEntityManager();
         EntityTransaction trans = em.getTransaction();
-
         try {
             trans.begin();
-            ProductType productType = em.find(ProductType.class, typeId);
-            if (productType != null) {
-                em.remove(productType); // Xóa loại sản phẩm
-            }
+            String jpql = "DELETE FROM ProductType pt WHERE pt.typeId = :id";
+            int deletedCount = em.createQuery(jpql)
+                                 .setParameter("id", typeId)
+                                 .executeUpdate();
+            
+            System.out.println("Số lượng dòng đã xóa: " + deletedCount);
             trans.commit();
         } catch (Exception e) {
-            trans.rollback();
+            if (trans.isActive()) trans.rollback();
+            e.printStackTrace();
             throw e;
         } finally {
             em.close();

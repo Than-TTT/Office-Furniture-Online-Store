@@ -1,12 +1,8 @@
 package cnpm.ergo.controller.Admin.Marketing.Voucher;
 
 import cnpm.ergo.entity.VoucherByPrice;
-import cnpm.ergo.entity.VoucherByProduct;
 import cnpm.ergo.service.implement.IVoucherByPriceServiceImpl;
-import cnpm.ergo.service.implement.IVoucherByProductServiceImpl;
 import cnpm.ergo.service.interfaces.IVoucherByPriceService;
-import cnpm.ergo.service.interfaces.IVoucherByProductService;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,100 +14,69 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@WebServlet(urlPatterns = {"/admin/voucher/editPrice", "/admin/views/voucher/editPrice"})
+@WebServlet(urlPatterns = {"/admin/voucher/editPrice"})
 public class UpdateVoucherPrice extends HttpServlet {
 
-    IVoucherByProductService voucherByProduct;
     IVoucherByPriceService voucherByPrice;
 
     @Override
     public void init() throws ServletException {
-        // Initialize the service implementation
         voucherByPrice = new IVoucherByPriceServiceImpl();
     }
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Lấy giá trị từ tham số của form
-        int voucherId = Integer.parseInt(request.getParameter("voucherId"));
-        String code = request.getParameter("voucherCode");
-        double discount = Double.parseDouble(request.getParameter("voucherDiscount"));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date dateStart = parseDate(request.getParameter("voucherDateStart"));
-        Date dateEnd = parseDate(request.getParameter("voucherDateEnd"));
-        String dateStartFormated = sdf.format(dateStart);
-        String dateEndFormated = sdf.format(dateEnd);
-        // Gửi giá trị vào trang editVoucherPrice.jsp
-        request.setAttribute("editvoucherId", voucherId);
-        request.setAttribute("editVoucherCodePrice", code);
-        request.setAttribute("editVoucherDiscountPrice", discount);
-        request.setAttribute("editVoucherDateStartPrice", dateStartFormated);
-        request.setAttribute("editVoucherDateEndPrice", dateEndFormated);
 
-        // Chuyển hướng đến trang editVoucherPrice
-//        RequestDispatcher dispatcher = request.getRequestDispatcher("views/editVoucherPrice.jsp");
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/admin/views/editVoucherPrice.jsp");
-        dispatcher.forward(request, response);
+    // doGet bây giờ không còn cần thiết nếu bạn đã dùng Modal tích hợp trong marketing.jsp
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.sendRedirect(request.getContextPath() + "/admin/marketing");
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        if (request.getSession().getAttribute("admin") == null) {
-//            response.sendRedirect(request.getContextPath() + "/admin/login");
-//            return;
-//        }
-        int voucherID = Integer.parseInt(request.getParameter("voucherId"));
-        System.out.println("testID" + voucherID);
-
-        String code = request.getParameter("editVoucherCodePrice");
-        System.out.println("Voucher Code: " + code);
-
-        double discount = Double.parseDouble(request.getParameter("editVoucherDiscountPrice"));
-        System.out.println("Discount: " + discount);
-
-        Date dateStart = parseDate(request.getParameter("editVoucherDateStartPrice"));
-        System.out.println("Start Date: " + dateStart);
-
-        Date dateEnd = parseDate(request.getParameter("editVoucherDateEndPrice"));
-        System.out.println("End Date: " + dateEnd);
-
-        double lowerbound = Double.parseDouble(request.getParameter("editVoucherLowerbound"));
-        System.out.println("Minimum Order Value: " + lowerbound);
-
-// In ra các giá trị của các biến
+        
+        // 1. Lấy dữ liệu từ Request (Lưu ý: Tên tham số phải khớp với thẻ <input name="..."> trong JSP)
+        String idStr = request.getParameter("voucherId");
+        String code = request.getParameter("editVoucherCode"); // Đổi từ editVoucherCodePrice -> editVoucherCode
+        String discountStr = request.getParameter("editVoucherDiscount"); // Đổi từ editVoucherDiscountPrice -> editVoucherDiscount
+        String dateStartStr = request.getParameter("editVoucherDateStart"); // Đổi từ editVoucherDateStartPrice -> editVoucherDateStart
+        String dateEndStr = request.getParameter("editVoucherDateEnd"); // Đổi từ editVoucherDateEndPrice -> editVoucherDateEnd
+        String lowerboundStr = request.getParameter("editLowerbound"); // Đã khớp với JSP
 
         try {
-            // Retrieve form data from the request
-            // Validate input fields (optional, add your validation logic here)
-                    VoucherByPrice voucher = voucherByPrice.findById(voucherID);
-                    if (voucher == null) {
-                        response.sendRedirect(request.getContextPath() + "/admin/marketing");
-                        return;
-                        }
-                    voucher.setCode(code);
-                    voucher.setDiscount(discount);
-                    voucher.setDateStart(dateStart);
-                    voucher.setDateEnd(dateEnd);
-                    voucher.setLowerbound(lowerbound);
+            // 2. Ép kiểu và kiểm tra Null để tránh sập server
+            int voucherID = Integer.parseInt(idStr);
+            double discount = (discountStr != null) ? Double.parseDouble(discountStr) : 0;
+            double lowerbound = (lowerboundStr != null) ? Double.parseDouble(lowerboundStr) : 0;
+            Date dateStart = parseDate(dateStartStr);
+            Date dateEnd = parseDate(dateEndStr);
 
-//                     Thêm vào cơ sở dữ liệu
-                    voucherByPrice.update(voucher);
+            // 3. Xử lý Update
+            VoucherByPrice voucher = voucherByPrice.findById(voucherID);
+            if (voucher != null) {
+                voucher.setCode(code);
+                voucher.setDiscount(discount);
+                voucher.setDateStart(dateStart);
+                voucher.setDateEnd(dateEnd);
+                voucher.setLowerbound(lowerbound);
 
+                voucherByPrice.update(voucher);
+            }
 
-                // Redirect to the employee management page upon success
-                response.sendRedirect(request.getContextPath() + "/admin/marketing");
-        }catch (Exception e) {
+            // 4. Quay lại trang marketing với tham số tab để mở lại tab voucher
+            response.sendRedirect(request.getContextPath() + "/admin/marketing?tab=voucher");
+
+        } catch (Exception e) {
             e.printStackTrace();
-            // Forward the error details to an error page
-            request.setAttribute("errorMessage", "Failed to edit the voucher. Please try again.");
-            request.getRequestDispatcher("/test").forward(request, response);
+            request.setAttribute("errorMessage", "Lỗi cập nhật Voucher: " + e.getMessage());
+            // Nếu lỗi, quay lại trang quản lý thay vì trang /test
+            response.sendRedirect(request.getContextPath() + "/admin/marketing");
         }
-
     }
-    private Date parseDate (String dateStr){
+
+    private Date parseDate(String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) return null;
         try {
-            // Sử dụng định dạng yyyy-MM-dd
             return new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
         } catch (ParseException e) {
             e.printStackTrace();
-            return null; // Trả về null nếu parse thất bại
+            return null;
         }
     }
 }

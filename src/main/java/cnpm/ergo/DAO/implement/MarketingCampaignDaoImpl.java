@@ -25,7 +25,7 @@ public class MarketingCampaignDaoImpl implements IMarketingCampaignDao {
         EntityTransaction transaction = entityManager.getTransaction();
         try {
             transaction.begin();
-            entityManager.persist(campaignEntity); 
+            entityManager.merge(campaignEntity); 
             transaction.commit();
         } catch (Exception e) {
             if (transaction.isActive()) {

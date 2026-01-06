@@ -23,112 +23,69 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/admin/voucher/editProduct", "/admin/views/voucher/editProduct"})
+@WebServlet(urlPatterns = {"/admin/voucher/editProduct"})
 public class UpdateVoucherProduct extends HttpServlet {
 
-    IVoucherByProductService voucherByProduct;
+    IVoucherByProductService voucherByProductService;
+    IProductTypeService productTypeService;
 
     @Override
     public void init() throws ServletException {
-        // Initialize the service implementation
-        voucherByProduct = new IVoucherByProductServiceImpl();
-    }
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Lấy giá trị từ tham số của form
-        int voucherId = Integer.parseInt(request.getParameter("voucherId"));
-        String code = request.getParameter("voucherCode");
-        double discount = Double.parseDouble(request.getParameter("voucherDiscount"));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date dateStart = parseDate(request.getParameter("voucherDateStart"));
-        Date dateEnd = parseDate(request.getParameter("voucherDateEnd"));
-        String dateStartFormated = sdf.format(dateStart);
-        String dateEndFormated = sdf.format(dateEnd);
-        // Gửi giá trị vào trang editVoucherProduct.jsp
-        request.setAttribute("editvoucherId", voucherId);
-        request.setAttribute("editVoucherCodeProduct", code);
-        request.setAttribute("editVoucherDiscountProduct", discount);
-        request.setAttribute("editVoucherDateStartProduct", dateStartFormated);
-        request.setAttribute("editVoucherDateEndProduct", dateEndFormated);
-
-
-
-        IProductTypeService productTypeService = new ProductTypeServiceImpl();
-        List<ProductType> productTypes = productTypeService.getAllProductTypes();
-        request.setAttribute("productTypes", productTypes);
-
-        // Chuyển hướng đến trang editVoucherProduct
-//        RequestDispatcher dispatcher = request.getRequestDispatcher("views/editVoucherProduct.jsp");
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/admin/views/editVoucherProduct.jsp");
-        dispatcher.forward(request, response);
+        voucherByProductService = new IVoucherByProductServiceImpl();
+        productTypeService = new ProductTypeServiceImpl();
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        if (request.getSession().getAttribute("admin") == null) {
-//            response.sendRedirect(request.getContextPath() + "/admin/login");
-//            return;
-//        }
-        int voucherID = Integer.parseInt(request.getParameter("voucherId"));
-        System.out.println("testID" + voucherID);
-
-        String code = request.getParameter("editVoucherCodeProduct");
-        System.out.println("Voucher Code: " + code);
-
-        double discount = Double.parseDouble(request.getParameter("editVoucherDiscountProduct"));
-        System.out.println("Discount: " + discount);
-
-        Date dateStart = parseDate(request.getParameter("editVoucherDateStartProduct"));
-        System.out.println("Start Date: " + dateStart);
-
-        Date dateEnd = parseDate(request.getParameter("editVoucherDateEndProduct"));
-        System.out.println("End Date: " + dateEnd);
-
+        // 1. Lấy dữ liệu theo đúng "name" trong Modal JSP
+        String idStr = request.getParameter("voucherId");
+        String code = request.getParameter("editVoucherCode");
+        String discountStr = request.getParameter("editVoucherDiscount");
+        String dateStartStr = request.getParameter("editVoucherDateStart");
+        String dateEndStr = request.getParameter("editVoucherDateEnd");
         String[] selectedProductTypes = request.getParameterValues("productTypes");
-        List<ProductType> productTypeList = new ArrayList<>();
-        IProductTypeService productTypeService = new ProductTypeServiceImpl();
-        if (selectedProductTypes != null) {
-            for(int i=0; i< selectedProductTypes.length;i++)
-            {
-                ProductType type = productTypeService.getProductTypeById((Integer.parseInt(selectedProductTypes[i])));
-                productTypeList.add(type);
-            }
-        }
-// In ra các giá trị của các biến
 
         try {
-            // Retrieve form data from the request
-            // Validate input fields (optional, add your validation logic here)
-            VoucherByProduct voucher = voucherByProduct.findById(voucherID);
-            if (voucher == null) {
-                response.sendRedirect(request.getContextPath() + "/admin/marketing");
-                return;
+            int voucherID = Integer.parseInt(idStr);
+            double discount = (discountStr != null && !discountStr.isEmpty()) ? Double.parseDouble(discountStr) : 0;
+            Date dateStart = parseDate(dateStartStr);
+            Date dateEnd = parseDate(dateEndStr);
+
+            // 2. Xử lý danh sách sản phẩm áp dụng
+            List<ProductType> productTypeList = new ArrayList<>();
+            if (selectedProductTypes != null) {
+                for (String typeId : selectedProductTypes) {
+                    ProductType type = productTypeService.getProductTypeById(Integer.parseInt(typeId));
+                    if (type != null) productTypeList.add(type);
+                }
             }
-            voucher.setCode(code);
-            voucher.setDiscount(discount);
-            voucher.setDateStart(dateStart);
-            voucher.setDateEnd(dateEnd);
-            voucher.setProductTypes(productTypeList);
 
-//                     Thêm vào cơ sở dữ liệu
-            voucherByProduct.update(voucher);
+            // 3. Cập nhật đối tượng
+            VoucherByProduct voucher = voucherByProductService.findById(voucherID);
+            if (voucher != null) {
+                voucher.setCode(code.toUpperCase());
+                voucher.setDiscount(discount);
+                voucher.setDateStart(dateStart);
+                voucher.setDateEnd(dateEnd);
+                voucher.setProductTypes(productTypeList);
 
+                voucherByProductService.update(voucher);
+            }
 
-            // Redirect to the employee management page upon success
-            response.sendRedirect(request.getContextPath() + "/admin/marketing");
-        }catch (Exception e) {
+            // 4. Redirect về trang marketing, mở tab voucher
+            response.sendRedirect(request.getContextPath() + "/admin/marketing?tab=voucher");
+
+        } catch (Exception e) {
             e.printStackTrace();
-            // Forward the error details to an error page
-            request.setAttribute("errorMessage", "Failed to edit the voucher. Please try again.");
-            request.getRequestDispatcher("/test").forward(request, response);
+            response.sendRedirect(request.getContextPath() + "/admin/marketing?error=1");
         }
-
     }
-    private Date parseDate (String dateStr){
+
+    private Date parseDate(String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) return null;
         try {
-            // Sử dụng định dạng yyyy-MM-dd
             return new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
         } catch (ParseException e) {
-            e.printStackTrace();
-            return null; // Trả về null nếu parse thất bại
+            return null;
         }
     }
 }

@@ -33,23 +33,39 @@ import java.io.File;
 public class UpdateController extends HttpServlet {
     private IMarketingCampaignService campaignService = new MarketingCampaignServiceImpl();
     private ICampaignImageService campaignImageService = new CampaignImageServiceImpl();
+    private IVoucherByPriceService priceService = new IVoucherByPriceServiceImpl();
+    private IVoucherByProductService productService = new IVoucherByProductServiceImpl();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         try {
             Long id = Long.parseLong(request.getParameter("campaignId"));
-            String content = request.getParameter("content");
+            // Sử dụng "editContent" và "editVoucherId" để khớp với Modal JSP đã sửa ở bước trước
+            String content = request.getParameter("editContent");
+            String vIdStr = request.getParameter("editVoucherId");
 
             MarketingCampaign campaign = campaignService.findByID(id);
             if (campaign != null) {
                 campaign.setContent(content);
+
+                // --- CẬP NHẬT VOUCHER ĐÍNH KÈM ---
+                if (vIdStr != null && !vIdStr.isEmpty()) {
+                    int vId = Integer.parseInt(vIdStr);
+                    Voucher voucher = priceService.findById(vId);
+                    if (voucher == null) {
+                        voucher = productService.findById(vId);
+                    }
+                    campaign.setVoucher(voucher);
+                } else {
+                    campaign.setVoucher(null); // Gỡ voucher nếu chọn "Không đính kèm"
+                }
+
                 campaignService.updateCampaign(campaign);
 
-                Part filePart = request.getPart("imageFile");
+                // --- CẬP NHẬT ẢNH (Dùng "editImageFile") ---
+                Part filePart = request.getPart("editImageFile");
                 if (filePart != null && filePart.getSize() > 0) {
-                    // Xóa ảnh cũ trong DB
                     campaignImageService.deleteByCampaignId(id);
-                    // Lưu file mới
                     String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
                     String uploadPath = getServletContext().getRealPath("/") + "marketing-images";
                     filePart.write(uploadPath + File.separator + fileName);
@@ -61,6 +77,9 @@ public class UpdateController extends HttpServlet {
                 }
             }
             response.sendRedirect(request.getContextPath() + "/admin/marketing");
-        } catch (Exception e) { e.printStackTrace(); response.sendRedirect(request.getContextPath() + "/admin/marketing?err=edit"); }
+        } catch (Exception e) { 
+            e.printStackTrace(); 
+            response.sendRedirect(request.getContextPath() + "/admin/marketing?err=update"); 
+        }
     }
 }

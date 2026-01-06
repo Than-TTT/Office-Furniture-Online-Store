@@ -21,17 +21,13 @@ public class DeleteController extends HttpServlet {
             String idParam = request.getParameter("id");
             if (idParam != null) {
                 Long id = Long.parseLong(idParam);
-                
-                // 1. Xóa ảnh ở bảng con trước để không bị lỗi ràng buộc khóa ngoại (Foreign Key)
                 campaignImageService.deleteByCampaignId(id);
-                
-                // 2. Xóa campaign ở bảng cha bằng ID
                 campaignService.deleteCampaign(id);
             }
-            response.sendRedirect(request.getContextPath() + "/admin/marketing");
+            response.sendRedirect(request.getContextPath() + "/admin/marketing?success=delete_ok");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/admin/marketing?error=delete_failed");
+            response.sendRedirect(request.getContextPath() + "/admin/marketing?error=delete_failed&tab=campaign");
         }
     }
 }

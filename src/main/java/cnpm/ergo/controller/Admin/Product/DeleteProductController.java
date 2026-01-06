@@ -1,3 +1,5 @@
+
+
 package cnpm.ergo.controller.Admin.Product;
 
 import cnpm.ergo.DAO.implement.ProductDaoImpl;
@@ -12,14 +14,21 @@ import java.io.IOException;
 
 @WebServlet(urlPatterns = "/admin/product/deleteproduct")
 public class DeleteProductController extends HttpServlet {
-        @Override
-        protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-                int productId = Integer.parseInt(req.getParameter("productId"));
-                IProductService productService = new ProductServiceImpl();
+    // Đổi từ doPost sang doGet
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        try {
+            int productId = Integer.parseInt(req.getParameter("productId"));
+            IProductService productService = new ProductServiceImpl();
 
-                // Xóa sản phẩm từ database
-                productService.deleteProduct(productId);
+            // Xóa sản phẩm (Database sẽ tự xóa Type nếu bạn đã cài ON DELETE CASCADE)
+            productService.deleteProduct(productId);
 
-                res.sendRedirect(req.getContextPath() + "/admin/product");
+            // Quay về danh sách
+            res.sendRedirect(req.getContextPath() + "/admin/product");
+        } catch (Exception e) {
+            e.printStackTrace();
+            res.sendRedirect(req.getContextPath() + "/admin/product?error=1");
         }
+    }
 }
