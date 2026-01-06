@@ -8,6 +8,7 @@ import java.util.List;
 public interface ICustomerDAO {
     public Customer getCustomerById(int id);
     public Customer getCustomerByEmail(String email);
+    public Customer getCustomerByPhone(String phone);
     public List<Customer> getAllCustomers();
     public boolean insert(Customer customer);
     public boolean update(Customer customer);

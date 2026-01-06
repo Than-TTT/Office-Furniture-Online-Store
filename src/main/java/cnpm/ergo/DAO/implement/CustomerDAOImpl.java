@@ -74,6 +74,27 @@ public class CustomerDAOImpl implements ICustomerDAO {
     }
 
     @Override
+    public Customer getCustomerByPhone(String phone) {
+        EntityManager entityManager = JPAConfig.getEntityManager();
+        try {
+            List<Customer> customers = entityManager.createQuery(
+                    "SELECT c FROM Customer c WHERE c.phone = :phone and c.isDelete != true ", Customer.class)
+                    .setParameter("phone", phone)
+                    .getResultList();
+            
+            if (customers != null && !customers.isEmpty()) {
+                return customers.get(0);
+            }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            entityManager.close();
+        }
+    }
+
+    @Override
     public List<Customer> getAllCustomers() {
         EntityManager entityManager = JPAConfig.getEntityManager();
         try {

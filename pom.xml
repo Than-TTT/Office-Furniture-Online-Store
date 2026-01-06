@@ -181,6 +181,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>ergo</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -197,6 +198,23 @@
 				<configuration>
 					<source>20</source>
 					<target>20</target>
+				</configuration>
+			</plugin>
+			<!-- Cargo Maven Plugin for Tomcat 10 -->
+			<plugin>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven3-plugin</artifactId>
+				<version>1.10.11</version>
+				<configuration>
+					<container>
+						<containerId>tomcat10x</containerId>
+						<type>embedded</type>
+					</container>
+					<configuration>
+						<properties>
+							<cargo.servlet.port>8080</cargo.servlet.port>
+						</properties>
+					</configuration>
 				</configuration>
 			</plugin>
 		</plugins>

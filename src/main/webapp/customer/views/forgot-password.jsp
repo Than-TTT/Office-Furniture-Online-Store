@@ -1,20 +1,65 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
-<head>
-    <title>Forgot Password</title>
-</head>
-<body>
-<h2>Forgot Password</h2>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %> <%@ taglib
+uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quên mật khẩu</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      .error-message {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-5">
+          <h2 class="text-center mb-4">Quên mật khẩu</h2>
+          <p class="text-muted text-center">
+            Nhập email đã đăng ký để nhận mã xác nhận
+          </p>
 
-<form action="${pageContext.request.contextPath}/customer/forgot-password" method="POST">
-    <label for="email">Enter your email:</label>
-    <input type="email" id="email" name="email" required><br><br>
+          <c:if test="${not empty error}">
+            <div class="alert alert-danger">${error}</div>
+          </c:if>
 
-    <button type="submit">Request OTP</button>
-</form>
+          <form
+            action="${pageContext.request.contextPath}/customer/forgot-password"
+            method="POST"
+            id="forgotForm"
+          >
+            <div class="form-group">
+              <label for="email"
+                >Email <span class="text-danger">*</span></label
+              >
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                value="${param.email}"
+                required
+              />
+            </div>
 
-<p><font color="red">${error}</font></p>
+            <button type="submit" class="btn btn-primary btn-block mt-3">
+              Gửi mã xác nhận
+            </button>
+          </form>
 
-<a href="${pageContext.request.contextPath}/customer/login">Back to Login</a>
-</body>
+          <p class="text-center mt-3">
+            <a href="${pageContext.request.contextPath}/customer/login"
+              >Quay lại đăng nhập</a
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

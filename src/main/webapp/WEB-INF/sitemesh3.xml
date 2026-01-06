@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemesh>
+    <!-- Exclude auth pages from decorator -->
+    <mapping path="/customer/login" exclude="true"/>
+    <mapping path="/customer/register" exclude="true"/>
+    <mapping path="/customer/forgot-password" exclude="true"/>
+    <mapping path="/customer/verify-otp" exclude="true"/>
+    <mapping path="/customer/reset-password" exclude="true"/>
+    
     <mapping path="/*" name="web" decorator="customer.jsp"/>
     <mapping path="/employee/*" name="employee" decorator="employee.jsp"/>
     <mapping path="/admin/*" name="admin" decorator="admin.jsp"/>
