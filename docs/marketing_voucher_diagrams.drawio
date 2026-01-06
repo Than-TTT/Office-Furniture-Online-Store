@@ -1,0 +1,578 @@
+<mxfile host="app.diagrams.net" modified="2026-01-06T19:56:00.000Z" agent="Copilot" version="21.0.0">
+  <diagram id="class-diagram" name="Class Diagram">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title1" value="Marketing, Voucher &amp; Campaign - Class Diagram" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="350" y="10" width="400" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- ENTITIES -->
+        <!-- MarketingCampaign -->
+        <mxCell id="mc1" value="&lt;&lt;Entity&gt;&gt;&#xa;MarketingCampaign" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="200" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="mc2" value="- campaignId: Long&#xa;- content: String&#xa;- isDelete: Boolean&#xa;- voucher: Voucher&#xa;- campaignImages: List&lt;CampaignImage&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="mc1">
+          <mxGeometry y="40" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="mc3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="mc1">
+          <mxGeometry y="120" width="200" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="mc4" value="+ getters/setters" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="mc1">
+          <mxGeometry y="128" width="200" height="22" as="geometry" />
+        </mxCell>
+        
+        <!-- Voucher (Abstract) -->
+        <mxCell id="v1" value="&lt;&lt;Entity&gt;&gt;&#xa;Voucher {abstract}" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="300" y="60" width="200" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="- voucherId: int&#xa;- code: String&#xa;- discount: double&#xa;- dateStart: Date&#xa;- dateEnd: Date&#xa;- isDelete: boolean&#xa;- marketingCampaign: MarketingCampaign" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="v1">
+          <mxGeometry y="40" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="v1">
+          <mxGeometry y="140" width="200" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" value="+ getters/setters" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="v1">
+          <mxGeometry y="148" width="200" height="22" as="geometry" />
+        </mxCell>
+        
+        <!-- VoucherByPrice -->
+        <mxCell id="vp1" value="&lt;&lt;Entity&gt;&gt;&#xa;VoucherByPrice" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="200" y="280" width="160" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="vp2" value="- lowerbound: double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="vp1">
+          <mxGeometry y="40" width="160" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="vp3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="vp1">
+          <mxGeometry y="66" width="160" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="vp4" value="" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="vp1">
+          <mxGeometry y="74" width="160" height="16" as="geometry" />
+        </mxCell>
+        
+        <!-- VoucherByProduct -->
+        <mxCell id="vprod1" value="&lt;&lt;Entity&gt;&gt;&#xa;VoucherByProduct" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="400" y="280" width="180" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="vprod2" value="- productTypes: List&lt;ProductType&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="vprod1">
+          <mxGeometry y="40" width="180" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="vprod3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="vprod1">
+          <mxGeometry y="66" width="180" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="vprod4" value="" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="vprod1">
+          <mxGeometry y="74" width="180" height="16" as="geometry" />
+        </mxCell>
+        
+        <!-- CampaignImage -->
+        <mxCell id="ci1" value="&lt;&lt;Entity&gt;&gt;&#xa;CampaignImage" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="280" width="140" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ci2" value="- imageId: Long&#xa;- imagePath: String&#xa;- marketingCampaign" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="ci1">
+          <mxGeometry y="40" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ci3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="ci1">
+          <mxGeometry y="90" width="140" height="8" as="geometry" />
+        </mxCell>
+        
+        <!-- ProductType -->
+        <mxCell id="pt1" value="&lt;&lt;Entity&gt;&gt;&#xa;ProductType" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="620" y="280" width="160" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="pt2" value="- typeId: int&#xa;- color: String&#xa;- material: String&#xa;- price: double&#xa;- quantity: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="pt1">
+          <mxGeometry y="40" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="pt3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="pt1">
+          <mxGeometry y="110" width="160" height="8" as="geometry" />
+        </mxCell>
+        
+        <!-- SERVICES -->
+        <mxCell id="svc1" value="&lt;&lt;Service&gt;&gt;&#xa;MarketingCampaignServiceImpl" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="430" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="svc2" value="- dao: MarketingCampaignDaoImpl" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="svc1">
+          <mxGeometry y="40" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="svc3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="svc1">
+          <mxGeometry y="66" width="220" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="svc4" value="+ addCampaign()&#xa;+ updateCampaign()&#xa;+ deleteCampaign()&#xa;+ findAllMarketingCampaign()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="svc1">
+          <mxGeometry y="74" width="220" height="46" as="geometry" />
+        </mxCell>
+        
+        <!-- VoucherByPriceService -->
+        <mxCell id="vsvc1" value="&lt;&lt;Service&gt;&gt;&#xa;IVoucherByPriceServiceImpl" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="280" y="430" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="vsvc2" value="- dao: IVoucherByPriceDAOImpl" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="vsvc1">
+          <mxGeometry y="40" width="200" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="vsvc3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="vsvc1">
+          <mxGeometry y="66" width="200" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="vsvc4" value="+ insert(), update(), delete()&#xa;+ findAll(), findById()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="vsvc1">
+          <mxGeometry y="74" width="200" height="26" as="geometry" />
+        </mxCell>
+        
+        <!-- VoucherByProductService -->
+        <mxCell id="vpsvc1" value="&lt;&lt;Service&gt;&gt;&#xa;IVoucherByProductServiceImpl" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="500" y="430" width="210" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="vpsvc2" value="- dao: IVoucherByProductDAOImpl" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="vpsvc1">
+          <mxGeometry y="40" width="210" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="vpsvc3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="vpsvc1">
+          <mxGeometry y="66" width="210" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="vpsvc4" value="+ insert(), update(), delete()&#xa;+ findAll(), findById()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="vpsvc1">
+          <mxGeometry y="74" width="210" height="26" as="geometry" />
+        </mxCell>
+        
+        <!-- CONTROLLERS -->
+        <mxCell id="ctrl1" value="&lt;&lt;Controller&gt;&gt;&#xa;MarketingController" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="580" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl2" value="@WebServlet(&quot;/admin/marketing&quot;)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="ctrl1">
+          <mxGeometry y="40" width="200" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="ctrl1">
+          <mxGeometry y="66" width="200" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl4" value="+ doGet(): loads all data&#xa;+ createVouchers()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="ctrl1">
+          <mxGeometry y="74" width="200" height="26" as="geometry" />
+        </mxCell>
+        
+        <!-- AddVoucherController -->
+        <mxCell id="addctrl1" value="&lt;&lt;Controller&gt;&gt;&#xa;AddVoucherController" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="260" y="580" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="addctrl2" value="@WebServlet(&quot;/admin/voucher/add&quot;)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="addctrl1">
+          <mxGeometry y="40" width="200" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="addctrl3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="addctrl1">
+          <mxGeometry y="66" width="200" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="addctrl4" value="+ doPost(): create voucher" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="addctrl1">
+          <mxGeometry y="74" width="200" height="26" as="geometry" />
+        </mxCell>
+        
+        <!-- CampaignAddController -->
+        <mxCell id="campctrl1" value="&lt;&lt;Controller&gt;&gt;&#xa;Campaign.AddController" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="480" y="580" width="220" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="campctrl2" value="@WebServlet(&quot;/admin/campaign/add&quot;)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="campctrl1">
+          <mxGeometry y="40" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="campctrl3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="campctrl1">
+          <mxGeometry y="66" width="220" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="campctrl4" value="+ doPost(): create campaign + image" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="campctrl1">
+          <mxGeometry y="74" width="220" height="26" as="geometry" />
+        </mxCell>
+        
+        <!-- RELATIONSHIPS -->
+        <!-- MarketingCampaign - Voucher (1:1) -->
+        <mxCell id="rel1" value="" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=bottom;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="mc2" target="v2">
+          <mxGeometry x="-1" y="3" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel1label" value="1:1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel1">
+          <mxGeometry x="-0.2" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        
+        <!-- MarketingCampaign - CampaignImage (1:*) -->
+        <mxCell id="rel2" value="" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="mc1" target="ci1">
+          <mxGeometry x="-1" y="3" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel2label" value="1:*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel2">
+          <mxGeometry x="-0.2" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        
+        <!-- Voucher - VoucherByPrice (inheritance) -->
+        <mxCell id="rel3" value="" style="endArrow=block;endSize=16;endFill=0;html=1;edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.3;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="vp1" target="v1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Voucher - VoucherByProduct (inheritance) -->
+        <mxCell id="rel4" value="" style="endArrow=block;endSize=16;endFill=0;html=1;edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.7;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="vprod1" target="v1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- VoucherByProduct - ProductType (M:N) -->
+        <mxCell id="rel5" value="" style="endArrow=open;html=1;endSize=12;startArrow=none;startSize=14;startFill=0;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="vprod2" target="pt2">
+          <mxGeometry x="-1" y="3" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel5label" value="M:N" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel5">
+          <mxGeometry x="-0.2" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        
+        <!-- Controller uses Service -->
+        <mxCell id="rel6" value="" style="endArrow=open;html=1;endSize=12;startArrow=none;startSize=14;startFill=0;dashed=1;edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="ctrl1" target="svc1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel6label" value="uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel6">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="sequence-diagram" name="Sequence - Add Voucher">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <mxCell id="seq_title" value="Sequence Diagram: Add Voucher by Product" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="300" y="10" width="350" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="part1" value="Browser" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="80" y="60" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="part2" value="AddVoucher&#xa;Controller" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="220" y="60" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="part3" value="ProductType&#xa;Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="380" y="60" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="part4" value="VoucherByProduct&#xa;Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="540" y="60" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="part5" value="Database" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="720" y="50" width="60" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="life1" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="120" y="100" as="sourcePoint" /><mxPoint x="120" y="480" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="life2" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="270" y="100" as="sourcePoint" /><mxPoint x="270" y="480" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="life3" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="430" y="100" as="sourcePoint" /><mxPoint x="430" y="480" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="life4" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="600" y="100" as="sourcePoint" /><mxPoint x="600" y="480" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="life5" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="750" y="110" as="sourcePoint" /><mxPoint x="750" y="480" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        
+        <mxCell id="msg1" value="1. POST /admin/voucher/add" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="120" y="130" as="sourcePoint" /><mxPoint x="270" y="130" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="msg2" value="2. loop: getProductTypeById(id)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="270" y="170" as="sourcePoint" /><mxPoint x="430" y="170" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="msg3" value="3. return ProductType" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="430" y="210" as="sourcePoint" /><mxPoint x="270" y="210" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="msg4" value="4. insert(voucherByProduct)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="270" y="260" as="sourcePoint" /><mxPoint x="600" y="260" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="msg5" value="5. persist(voucher)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="600" y="300" as="sourcePoint" /><mxPoint x="750" y="300" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="msg6" value="6. INSERT voucher + join table" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="750" y="340" as="sourcePoint" /><mxPoint x="600" y="340" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="msg7" value="7. redirect /admin/marketing" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="270" y="420" as="sourcePoint" /><mxPoint x="120" y="420" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="sequence-diagram-campaign" name="Sequence - Add Campaign">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <mxCell id="seq2_title" value="Sequence Diagram: Add Marketing Campaign" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="280" y="10" width="400" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="c_part1" value="Browser" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="60" y="60" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c_part2" value="AddController" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="190" y="60" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c_part3" value="Campaign&#xa;Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="340" y="60" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c_part4" value="FileUploadUtil" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="490" y="60" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c_part5" value="CampaignImage&#xa;Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="640" y="60" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c_part6" value="Database" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="790" y="50" width="60" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="c_life1" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="100" as="sourcePoint" /><mxPoint x="100" y="500" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c_life2" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="100" as="sourcePoint" /><mxPoint x="240" y="500" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c_life3" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="390" y="100" as="sourcePoint" /><mxPoint x="390" y="500" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c_life4" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="540" y="100" as="sourcePoint" /><mxPoint x="540" y="500" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c_life5" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="690" y="100" as="sourcePoint" /><mxPoint x="690" y="500" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c_life6" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="820" y="110" as="sourcePoint" /><mxPoint x="820" y="500" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        
+        <mxCell id="c_msg1" value="1. POST multipart form" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="130" as="sourcePoint" /><mxPoint x="240" y="130" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c_msg2" value="2. addCampaign(campaign)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="170" as="sourcePoint" /><mxPoint x="390" y="170" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c_msg3" value="3. persist to DB" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="390" y="200" as="sourcePoint" /><mxPoint x="820" y="200" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c_msg4" value="4. uploadFile(part, path)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="250" as="sourcePoint" /><mxPoint x="540" y="250" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c_msg5" value="5. return imagePath" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="540" y="290" as="sourcePoint" /><mxPoint x="240" y="290" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c_msg6" value="6. addImage(campaignImage)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="340" as="sourcePoint" /><mxPoint x="690" y="340" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c_msg7" value="7. persist image" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="690" y="380" as="sourcePoint" /><mxPoint x="820" y="380" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c_msg8" value="8. redirect /admin/marketing" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="450" as="sourcePoint" /><mxPoint x="100" y="450" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="sequence-update-voucher" name="Sequence - Update Voucher">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <mxCell id="uv_title" value="Sequence Diagram: Update Voucher by Product" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="280" y="10" width="400" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="uv_part1" value="Browser" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="60" y="60" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uv_part2" value="UpdateVoucher&#xa;Product" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="190" y="60" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uv_part3" value="VoucherByProduct&#xa;Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="340" y="60" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uv_part4" value="ProductType&#xa;Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="510" y="60" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uv_part5" value="Database" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="680" y="50" width="60" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="uv_life1" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="100" as="sourcePoint" /><mxPoint x="100" y="580" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uv_life2" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="100" as="sourcePoint" /><mxPoint x="240" y="580" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uv_life3" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="400" y="100" as="sourcePoint" /><mxPoint x="400" y="580" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uv_life4" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="560" y="100" as="sourcePoint" /><mxPoint x="560" y="580" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uv_life5" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="710" y="110" as="sourcePoint" /><mxPoint x="710" y="580" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        
+        <!-- doGet flow -->
+        <mxCell id="uv_note1" value="GET: Load Edit Form" style="text;html=1;strokeColor=none;fillColor=#ffe6cc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=11;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="60" y="120" width="120" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="uv_msg1" value="1. GET /admin/voucher/update?id=x" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="160" as="sourcePoint" /><mxPoint x="240" y="160" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uv_msg2" value="2. findById(voucherId)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="200" as="sourcePoint" /><mxPoint x="400" y="200" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uv_msg2b" value="3. SELECT with JOIN FETCH productTypes" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="400" y="230" as="sourcePoint" /><mxPoint x="710" y="230" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uv_msg3" value="4. return VoucherByProduct" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="400" y="260" as="sourcePoint" /><mxPoint x="240" y="260" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uv_msg4" value="5. findAll()" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="290" as="sourcePoint" /><mxPoint x="560" y="290" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uv_msg5" value="6. return List&lt;ProductType&gt;" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="560" y="320" as="sourcePoint" /><mxPoint x="240" y="320" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uv_msg6" value="7. forward editVoucherProduct.jsp&#xa;(voucher, allTypes, selectedTypeIds)" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="360" as="sourcePoint" /><mxPoint x="100" y="360" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        
+        <!-- doPost flow -->
+        <mxCell id="uv_note2" value="POST: Save Changes" style="text;html=1;strokeColor=none;fillColor=#ffe6cc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=11;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="60" y="400" width="120" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="uv_msg7" value="8. POST form data (id, code, dates, productTypes[])" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="440" as="sourcePoint" /><mxPoint x="240" y="440" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uv_msg8" value="9. loop: getProductTypeById(id)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="470" as="sourcePoint" /><mxPoint x="560" y="470" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uv_msg9" value="10. update(voucherByProduct)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="500" as="sourcePoint" /><mxPoint x="400" y="500" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uv_msg10" value="11. UPDATE voucher + sync join table" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="400" y="530" as="sourcePoint" /><mxPoint x="710" y="530" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uv_msg11" value="12. redirect /admin/marketing" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="240" y="560" as="sourcePoint" /><mxPoint x="100" y="560" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="sequence-update-campaign" name="Sequence - Update Campaign">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <mxCell id="uc_title" value="Sequence Diagram: Update Marketing Campaign" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="260" y="10" width="420" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="uc_part1" value="Browser" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_part2" value="Update&#xa;Controller" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="160" y="60" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_part3" value="Campaign&#xa;Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="290" y="60" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_part4" value="Voucher&#xa;Services" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="420" y="60" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_part5" value="FileUploadUtil" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="550" y="60" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_part6" value="CampaignImage&#xa;Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="680" y="60" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_part7" value="Database" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="820" y="50" width="60" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="uc_life1" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="80" y="100" as="sourcePoint" /><mxPoint x="80" y="680" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_life2" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="205" y="100" as="sourcePoint" /><mxPoint x="205" y="680" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_life3" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="335" y="100" as="sourcePoint" /><mxPoint x="335" y="680" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_life4" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="465" y="100" as="sourcePoint" /><mxPoint x="465" y="680" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_life5" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="595" y="100" as="sourcePoint" /><mxPoint x="595" y="680" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_life6" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="730" y="100" as="sourcePoint" /><mxPoint x="730" y="680" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_life7" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="850" y="110" as="sourcePoint" /><mxPoint x="850" y="680" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        
+        <!-- doGet flow -->
+        <mxCell id="uc_note1" value="GET: Load Edit Form" style="text;html=1;strokeColor=none;fillColor=#ffe6cc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=11;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="120" width="120" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="uc_msg1" value="1. GET /admin/campaign/update?id=x" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="80" y="160" as="sourcePoint" /><mxPoint x="205" y="160" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_msg2" value="2. findById(campaignId)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="205" y="190" as="sourcePoint" /><mxPoint x="335" y="190" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_msg2b" value="3. SELECT with JOIN FETCH voucher, images" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="335" y="220" as="sourcePoint" /><mxPoint x="850" y="220" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_msg3" value="4. return MarketingCampaign" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="335" y="250" as="sourcePoint" /><mxPoint x="205" y="250" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_msg4" value="5. findAllVouchers()" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="205" y="280" as="sourcePoint" /><mxPoint x="465" y="280" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_msg5" value="6. return List&lt;Voucher&gt;" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="465" y="310" as="sourcePoint" /><mxPoint x="205" y="310" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_msg6" value="7. forward editCampaign.jsp&#xa;(campaign, allVouchers, currentImage)" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="205" y="350" as="sourcePoint" /><mxPoint x="80" y="350" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        
+        <!-- doPost flow -->
+        <mxCell id="uc_note2" value="POST: Save Changes" style="text;html=1;strokeColor=none;fillColor=#ffe6cc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=11;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="390" width="120" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="uc_msg7" value="8. POST multipart (id, content, voucherId, image)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="80" y="430" as="sourcePoint" /><mxPoint x="205" y="430" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_msg8" value="9. findById(campaignId)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="205" y="460" as="sourcePoint" /><mxPoint x="335" y="460" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_msg9" value="10. return managed campaign" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="335" y="490" as="sourcePoint" /><mxPoint x="205" y="490" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_msg10" value="11. updateCampaign(campaign)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="205" y="520" as="sourcePoint" /><mxPoint x="335" y="520" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_msg11" value="12. UPDATE campaign in DB" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="335" y="550" as="sourcePoint" /><mxPoint x="850" y="550" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        
+        <!-- Optional image update -->
+        <mxCell id="uc_opt" value="[opt: new image uploaded]" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="180" y="575" width="140" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_msg12" value="13. uploadFile(part, path)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="205" y="600" as="sourcePoint" /><mxPoint x="595" y="600" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="uc_msg13" value="14. addImage(newCampaignImage)" style="endArrow=classic;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="205" y="630" as="sourcePoint" /><mxPoint x="730" y="630" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        
+        <mxCell id="uc_msg14" value="15. redirect /admin/marketing" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="205" y="660" as="sourcePoint" /><mxPoint x="80" y="660" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
