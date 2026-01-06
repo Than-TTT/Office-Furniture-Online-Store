@@ -18,10 +18,12 @@ import java.io.IOException;
 @WebServlet(urlPatterns = {
         "/customer/forgot-password",
         "/customer/verify-otp",
-        "/customer/reset-password"
+        "/customer/reset-password",
+        "/customer/resend-otp"
 })
 public class ForgotPassword extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final int OTP_EXPIRY_SECONDS = 90; // OTP hết hạn sau 90 giây
 
     private final OTPService otpService = new OTPService(); // OTP service
     private final IUserService userService = new UserServiceImpl(); // User service
@@ -41,6 +43,9 @@ public class ForgotPassword extends HttpServlet {
                 break;
             case "/customer/reset-password":
                 request.getRequestDispatcher("/customer/views/reset-password.jsp").forward(request, response);
+                break;
+            case "/customer/resend-otp":
+                handleResendOTP(request, response);
                 break;
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -65,110 +70,158 @@ public class ForgotPassword extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
+    
     private void handleForgotPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("Handling forgot password request...");
-
-        // Retrieve the email parameter from the request
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        
         String email = request.getParameter("email");
-        System.out.println("Received email parameter: " + email);
 
-        // Check if the email is empty or null
+        // Kiểm tra email rỗng
         if (email == null || email.trim().isEmpty()) {
-            System.out.println("Email is empty. Prompting user to enter an email.");
-            request.setAttribute("error", "Please enter your email address.");
+            request.setAttribute("error", "Vui lòng nhập email");
             request.getRequestDispatcher("/customer/views/forgot-password.jsp").forward(request, response);
             return;
         }
 
-        // Check if the email exists in the system
-        System.out.println("Checking if email exists in the system...");
+        // 4.1 Kiểm tra email tồn tại
         if (customerService.getCustomerByEmail(email) != null) {
-            System.out.println("Email found: " + email);
             try {
-                // Generate and send the OTP
-                System.out.println("Generating OTP...");
+                // Tạo và gửi OTP
                 String otp = otpService.generateOTP();
-                System.out.println("Generated OTP: " + otp);
-                System.out.println("Sending OTP email...");
                 otpService.sendOTPEmail(email, otp);
 
-                // Save OTP and email to session
-                System.out.println("Saving OTP and email to session...");
+                // Lưu OTP, email và thời gian tạo vào session
                 HttpSession session = request.getSession();
                 session.setAttribute("otp", otp);
                 session.setAttribute("email", email);
+                session.setAttribute("otpCreatedTime", System.currentTimeMillis());
 
-                // Redirect to verify OTP page
-                System.out.println("Redirecting to verify OTP page...");
                 response.sendRedirect(request.getContextPath() + "/customer/verify-otp");
             } catch (Exception e) {
-                // Log the exception details
-                System.err.println("Failed to send OTP email:");
-                e.printStackTrace(System.err);
-
-                // Show error message on the UI
-                request.setAttribute("error", "Failed to send OTP. Please try again.");
+                e.printStackTrace();
+                request.setAttribute("error", "Không thể gửi mã OTP. Vui lòng thử lại.");
                 request.getRequestDispatcher("/customer/views/forgot-password.jsp").forward(request, response);
             }
         } else {
-            // Email not found
-            System.out.println("No account found with email: " + email);
-            request.setAttribute("error", "No account found with that email.");
+            // Email không tồn tại
+            request.setAttribute("error", "Email không tồn tại");
             request.getRequestDispatcher("/customer/views/forgot-password.jsp").forward(request, response);
         }
-
     }
 
-
+    private void handleResendOTP(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        String email = (String) session.getAttribute("email");
+        
+        if (email == null) {
+            response.sendRedirect(request.getContextPath() + "/customer/forgot-password");
+            return;
+        }
+        
+        try {
+            // Tạo OTP mới
+            String otp = otpService.generateOTP();
+            otpService.sendOTPEmail(email, otp);
+            
+            // Cập nhật session
+            session.setAttribute("otp", otp);
+            session.setAttribute("otpCreatedTime", System.currentTimeMillis());
+            
+            request.setAttribute("success", "Mã xác nhận mới đã được gửi!");
+            request.getRequestDispatcher("/customer/views/verify-otp.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Không thể gửi lại mã. Vui lòng thử lại.");
+            request.getRequestDispatcher("/customer/views/verify-otp.jsp").forward(request, response);
+        }
+    }
 
     private void handleVerifyOTP(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String enteredOTP = request.getParameter("otp");
         HttpSession session = request.getSession();
         String sessionOTP = (String) session.getAttribute("otp");
+        Long otpCreatedTime = (Long) session.getAttribute("otpCreatedTime");
+        
+        // Kiểm tra OTP rỗng
+        if (enteredOTP == null || enteredOTP.trim().isEmpty()) {
+            request.setAttribute("error", "Vui lòng nhập mã xác nhận");
+            request.getRequestDispatcher("/customer/views/verify-otp.jsp").forward(request, response);
+            return;
+        }
+        
+        // 5.2 Kiểm tra OTP hết hạn
+        if (otpCreatedTime != null) {
+            long elapsedSeconds = (System.currentTimeMillis() - otpCreatedTime) / 1000;
+            if (elapsedSeconds > OTP_EXPIRY_SECONDS) {
+                request.setAttribute("error", "Mã đã hết hạn");
+                request.setAttribute("showResend", true);
+                request.getRequestDispatcher("/customer/views/verify-otp.jsp").forward(request, response);
+                return;
+            }
+        }
 
-        if (enteredOTP != null && enteredOTP.equals(sessionOTP)) {
+        // 5.1 Kiểm tra OTP đúng không
+        if (enteredOTP.equals(sessionOTP)) {
+            session.setAttribute("otpVerified", true);
             response.sendRedirect(request.getContextPath() + "/customer/reset-password");
         } else {
-            request.setAttribute("error", "Invalid OTP. Please try again.");
+            request.setAttribute("error", "Mã xác nhận không đúng");
             request.getRequestDispatcher("/customer/views/verify-otp.jsp").forward(request, response);
         }
     }
 
     private void handleResetPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        
         String newPassword = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
         HttpSession session = request.getSession();
         String email = (String) session.getAttribute("email");
+        Boolean otpVerified = (Boolean) session.getAttribute("otpVerified");
+        
+        // Kiểm tra đã xác thực OTP chưa
+        if (otpVerified == null || !otpVerified) {
+            response.sendRedirect(request.getContextPath() + "/customer/forgot-password");
+            return;
+        }
+        
+        // Kiểm tra password rỗng
+        if (newPassword == null || newPassword.isEmpty()) {
+            request.setAttribute("error", "Vui lòng nhập mật khẩu mới");
+            request.getRequestDispatcher("/customer/views/reset-password.jsp").forward(request, response);
+            return;
+        }
+        
+        // 7.2 Kiểm tra mật khẩu >= 6 ký tự
+        if (newPassword.length() < 6) {
+            request.setAttribute("error", "Mật khẩu tối thiểu 6 ký tự");
+            request.getRequestDispatcher("/customer/views/reset-password.jsp").forward(request, response);
+            return;
+        }
 
-//        UserServiceImpl service = new UserServiceImpl();
-
-        System.out.println("Received new password: " + newPassword);
-        System.out.println("Received confirm password: " + confirmPassword);
-        System.out.println("Email from session: " + email);
-
-        if (newPassword == null || confirmPassword == null || !newPassword.equals(confirmPassword)) {
-            request.setAttribute("error", "Passwords do not match. Please try again.");
+        // 7.1 Kiểm tra xác nhận mật khẩu
+        if (confirmPassword == null || !newPassword.equals(confirmPassword)) {
+            request.setAttribute("error", "Mật khẩu nhập lại không khớp");
             request.getRequestDispatcher("/customer/views/reset-password.jsp").forward(request, response);
             return;
         }
 
         try {
-            // Call user service to update the password
             boolean result = customerService.updateCustomerPassword(email, newPassword);
-            System.out.println("Password updated: " + result);
 
             if (result) {
                 session.invalidate();
+                request.getSession().setAttribute("successMessage", "Đặt lại mật khẩu thành công! Vui lòng đăng nhập.");
                 response.sendRedirect(request.getContextPath() + "/customer/login");
             } else {
-                request.setAttribute("error", "Failed to reset password. Please try again.");
+                request.setAttribute("error", "Không thể đặt lại mật khẩu. Vui lòng thử lại.");
                 request.getRequestDispatcher("/customer/views/reset-password.jsp").forward(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Failed to update password: " + e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to update password." + e.getMessage());
-            request.setAttribute("error", "Failed to reset password. Please try again.");
+            request.setAttribute("error", "Đã xảy ra lỗi. Vui lòng thử lại.");
             request.getRequestDispatcher("/customer/views/reset-password.jsp").forward(request, response);
         }
     }

@@ -6,6 +6,7 @@ import java.util.List;
 public interface ICustomerService {
     Customer getCustomerById(int id);
     Customer getCustomerByEmail(String email);
+    Customer getCustomerByPhone(String phone);
     List<Customer> getAllCustomers();
     boolean insert(Customer customer);
     void update(Customer customer);

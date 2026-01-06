@@ -1,5 +1,6 @@
 package cnpm.ergo.controller.Customer;
 
+import cnpm.ergo.entity.Customer;
 import cnpm.ergo.service.implement.AdministratorServiceImpl;
 import cnpm.ergo.service.implement.OTPService;
 import cnpm.ergo.service.implement.CustomerServiceImpl;
@@ -37,21 +38,41 @@ public class LoginController extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
+        // Giữ lại giá trị đã nhập để hiển thị lại khi có lỗi
+        request.setAttribute("email", email);
+
+        // 4.1. Nếu thiếu Email hoặc Mật khẩu
         if (email == null || password == null || email.trim().isEmpty() || password.trim().isEmpty()) {
-            // Nếu email hoặc password bị null hoặc rỗng, hiển thị lỗi
-            request.setAttribute("error", "Vui lòng nhập email và mật khẩu.");
+            request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin");
             request.getRequestDispatcher("/customer/views/login.jsp").forward(request, response);
             return;
         }
+
+        email = email.trim();
+        password = password.trim();
+
+        // Kiểm tra email có tồn tại trong hệ thống không
         ICustomerService customerService = new CustomerServiceImpl();
-        if (customerService.login(email, password)) {
-            HttpSession session = request.getSession();
-            session.setAttribute("customer", customerService.getCustomer(email));
-            response.sendRedirect(request.getContextPath() + "/customer/home");
-        } else {
-            request.setAttribute("error", "Email or password is incorrect.");
+        Customer customer = customerService.getCustomerByEmail(email);
+
+        // 4.2. Nếu Email không tồn tại trong hệ thống
+        if (customer == null) {
+            request.setAttribute("error", "Tài khoản không tồn tại");
             request.getRequestDispatcher("/customer/views/login.jsp").forward(request, response);
+            return;
         }
+
+        // 4.3. Nếu Mật khẩu không chính xác
+        if (!customer.getPassword().equals(password)) {
+            request.setAttribute("error", "Mật khẩu không đúng");
+            request.getRequestDispatcher("/customer/views/login.jsp").forward(request, response);
+            return;
+        }
+
+        // Đăng nhập thành công - chuyển đến Trang chủ
+        HttpSession session = request.getSession();
+        session.setAttribute("customer", customer);
+        response.sendRedirect(request.getContextPath() + "/customer/home");
     }
     private boolean isCustomerSession(HttpServletRequest req) {
         HttpSession session = req.getSession(false); // Không tạo mới session nếu chưa tồn tại

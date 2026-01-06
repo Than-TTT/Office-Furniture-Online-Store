@@ -66,6 +66,12 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
+    public Customer getCustomerByPhone(String phone) {
+        ICustomerDAO customerDAO = new CustomerDAOImpl();
+        return customerDAO.getCustomerByPhone(phone);
+    }
+
+    @Override
     public List<Customer> getAllCustomers() {
         ICustomerDAO customerDAO = new CustomerDAOImpl();
         return customerDAO.getAllCustomers();
