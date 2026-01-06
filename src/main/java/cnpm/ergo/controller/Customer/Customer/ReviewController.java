@@ -3,9 +3,10 @@ package cnpm.ergo.controller.Customer.Customer;
 import cnpm.ergo.entity.*;
 import cnpm.ergo.service.implement.ProductServiceImpl;
 import cnpm.ergo.service.implement.ReviewServiceImpl;
+import cnpm.ergo.service.interfaces.IOrderService;
 import cnpm.ergo.service.interfaces.IProductService;
 import cnpm.ergo.service.interfaces.IReviewService;
-
+import cnpm.ergo.service.implement.OrderServiceImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 public class ReviewController extends HttpServlet {
     private final IReviewService reviewService = new ReviewServiceImpl();
     private final IProductService productService = new ProductServiceImpl();
+    private final IOrderService orderService = new OrderServiceImpl();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -40,7 +42,7 @@ public class ReviewController extends HttpServlet {
             // Xây dựng đối tượng review
             Product product = productService.getProductById(productId);
             Customer customer = (Customer) request.getSession().getAttribute("customer");
-
+            Order order = orderService.findById(orderId);
             if (product != null && customer != null) {
                 Review review = new Review();
                 review.setContent(content);
@@ -48,6 +50,7 @@ public class ReviewController extends HttpServlet {
                 review.setCreateAt(LocalDateTime.now());
                 review.setProduct(product);
                 review.setCustomer(customer);
+                review.setOrder(order); 
 
                 // Lưu review
                 reviewService.insert(review);

@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebServlet(name = "UpdateController1", value = "/customer/update")
+@WebServlet(name = "UpdateController1", value = {"/customer/update"})
 public class UpdateController extends HttpServlet {
     private ICustomerService customerService;
 
@@ -27,13 +27,13 @@ public class UpdateController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             // Kiểm tra user đã đăng nhập chưa
-            if (request.getSession().getAttribute("customer") == null) {
+            if (request.getSession().getAttribute("user") == null) {
                 response.sendRedirect(request.getContextPath() + "/customer/login");
                 return;
             }
 
             // Lấy thông tin user từ session
-            Customer currentCustomer = (Customer) request.getSession().getAttribute("customer");
+            Customer currentCustomer = (Customer) request.getSession().getAttribute("user");
 //            int id_user = 94;
 //
 //            Customer customer = customerService.getCustomerById(id_user);
@@ -61,7 +61,7 @@ public class UpdateController extends HttpServlet {
             customerService.update(currentCustomer);
 
             // Cập nhật lại thông tin user trong session
-            request.getSession().setAttribute("customer", currentCustomer);
+            request.getSession().setAttribute("user", currentCustomer);
 
             // Redirect về trang profile
             response.sendRedirect(request.getContextPath() + "/customer/info");

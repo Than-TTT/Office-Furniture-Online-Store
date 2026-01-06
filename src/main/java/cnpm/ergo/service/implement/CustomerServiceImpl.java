@@ -15,8 +15,17 @@ import java.util.List;
 
 public class CustomerServiceImpl implements ICustomerService {
     private ICustomerDAO customerDAO = new CustomerDAOImpl();
+    private IUserDAO userDAO = new UserDAOImpl();
 
-
+    // Thêm phương thức để lấy User theo ID
+    public User getUserById(int userId) {
+        try {
+            return userDAO.getUserById(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     @Override
     public long count() {
@@ -28,15 +37,13 @@ public class CustomerServiceImpl implements ICustomerService {
     public boolean login(String email, String password) {
         Customer customer = customerDAO.getCustomerByEmail(email);
         if (customer != null) {
-            return customer.getPassword().equals(password);//match thì return true
+            return customer.getPassword().equals(password);
         }
         return false;
     }
 
     @Override
     public boolean updateCustomerPassword(String email, String newPassword) {
-//            ICustomerDAO customerDAO = new CustomerDAOImpl();
-
         Customer customer = customerDAO.getCustomerByEmail(email);
         if (customer != null) {
             customer.setPassword(newPassword);
@@ -44,14 +51,13 @@ public class CustomerServiceImpl implements ICustomerService {
             System.out.println("Update result: " + updateResult);
             return updateResult;
         }
-        return false;  // Return false if the user doesn't exist
+        return false;
     }
 
     @Override
     public Customer getCustomer(String email) {
         return customerDAO.getCustomer(email);
     }
-
 
     @Override
     public Customer getCustomerById(int id) {
@@ -73,9 +79,7 @@ public class CustomerServiceImpl implements ICustomerService {
 
     @Override
     public boolean insert(Customer customer) {
-//        ICustomerDAO customerDAO = new CustomerDAOImpl();
-//        return customerDAO.insert(customer);
-    	EntityManager em = JPAConfig.getEntityManager();
+        EntityManager em = JPAConfig.getEntityManager();
         try {
             em.getTransaction().begin();
             Role customerRole = em.find(Role.class, 3); 
