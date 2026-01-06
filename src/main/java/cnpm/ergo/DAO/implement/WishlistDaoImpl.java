@@ -52,29 +52,29 @@ public class WishlistDaoImpl implements IWishlistDao {
 
 	@Override
 	public void delete(int userId, int productId) {
-		EntityManager em = JPAConfig.getEntityManager();
-	    EntityTransaction trans = em.getTransaction();
-
-	    try {
-	        trans.begin();
-	        // Tìm user và sp cụ thể
-	        String jpql = "SELECT w FROM Wishlist w WHERE w.user.userId = :userId AND w.product.productId = :productId";
-	        TypedQuery<Wishlist> query = em.createQuery(jpql, Wishlist.class);
-	        query.setParameter("userId", userId);
-	        query.setParameter("productId", productId);
-	        Wishlist wishlist = query.getSingleResult();
-
-	        if (wishlist != null) {
-	            em.remove(wishlist); // Xóa
-	        }
-	        trans.commit();
-	    } catch (Exception e) {
-	        trans.rollback();
-	        throw e;
-	    } finally {
-	        em.close();
-	    }
-
+//		EntityManager em = JPAConfig.getEntityManager();
+//	    EntityTransaction trans = em.getTransaction();
+//
+//	    try {
+//	        trans.begin();
+//	        // Tìm user và sp cụ thể
+//	        String jpql = "SELECT w FROM Wishlist w WHERE w.user.userId = :userId AND w.product.productId = :productId";
+//	        TypedQuery<Wishlist> query = em.createQuery(jpql, Wishlist.class);
+//	        query.setParameter("userId", userId);
+//	        query.setParameter("productId", productId);
+//	        Wishlist wishlist = query.getSingleResult();
+//
+//	        if (wishlist != null) {
+//	            em.remove(wishlist); // Xóa
+//	        }
+//	        trans.commit();
+//	    } catch (Exception e) {
+//	        trans.rollback();
+//	        throw e;
+//	    } finally {
+//	        em.close();
+//	    }
+//
 	}
 
 	@Override

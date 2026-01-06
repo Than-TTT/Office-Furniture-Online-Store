@@ -1,3 +1,4 @@
+// ...existing code...
 package cnpm.ergo.controller.Admin.Marketing;
 
 import cnpm.ergo.entity.*;
@@ -24,33 +25,29 @@ public class MarketingController extends HttpServlet {
     IMarketingCampaignService marketingCampaignService = new MarketingCampaignServiceImpl();
     IVoucherByPriceService voucherByPriceService = new IVoucherByPriceServiceImpl();
     IVoucherByProductService voucherByProductService = new IVoucherByProductServiceImpl();
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Check if admin is logged in
+        if (request.getSession().getAttribute("admin") == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/login");
+            return;
+        }
 
+        // Get vouchers
         List<VoucherByPrice> voucherByPriceList = voucherByPriceService.findAll();
         List<VoucherByProduct> voucherByProductList = voucherByProductService.findAll();
         List<Voucher> vouchers = new ArrayList<>();
         vouchers = createVouchers(vouchers);
 
-        List<MarketingCampaign> Campaigns = marketingCampaignService.findAllMarketingCampaign();
+        List<MarketingCampaign> marketingCampaignList = marketingCampaignService.findAllMarketingCampaign();
 
         IProductTypeService productTypeService = new ProductTypeServiceImpl();
         List<ProductType> productTypes = productTypeService.getAllProductTypes();
 
-        IMarketingCampaignService marketingCampaignService = new MarketingCampaignServiceImpl();
-        List<MarketingCampaign> marketingCampaignList = marketingCampaignService.findAllMarketingCampaign();
-
-
-//        long totalvoucher = vouchers.stream().count();
-//        int totalPages = (int) Math.ceil((double) totalvoucher / pageSize);
-
-        request.setAttribute("vouchers",vouchers);
-        request.setAttribute("campaigns",Campaigns);
+        request.setAttribute("vouchers", vouchers);
         request.setAttribute("productTypes", productTypes);
         request.setAttribute("campaigns", marketingCampaignList);
-
-//        request.setAttribute("currentPage", pageNo);
-//        request.setAttribute("totalPages", totalPages);
 
         request.getRequestDispatcher("views/marketing.jsp").forward(request, response);
     }
@@ -69,3 +66,4 @@ public class MarketingController extends HttpServlet {
         return vouchers;
     }
 }
+// ...existing code...

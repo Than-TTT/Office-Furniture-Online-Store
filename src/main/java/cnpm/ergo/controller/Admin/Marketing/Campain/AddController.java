@@ -1,3 +1,4 @@
+// ...existing code...
 package cnpm.ergo.controller.Admin.Marketing.Campain;
 
 import cnpm.ergo.entity.*;
@@ -9,6 +10,7 @@ import cnpm.ergo.service.interfaces.ICampaignImageService;
 import cnpm.ergo.service.interfaces.IMarketingCampaignService;
 import cnpm.ergo.service.interfaces.IVoucherByPriceService;
 import cnpm.ergo.service.interfaces.IVoucherByProductService;
+import cnpm.ergo.util.FileUploadUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,68 +18,95 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
-import java.io.File;
+
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
-
-@WebServlet(urlPatterns = "/admin/campaign/addCampaign")
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024 * 2,
-    maxFileSize = 1024 * 1024 * 10,
-    maxRequestSize = 1024 * 1024 * 50
+        fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 5 * 1024 * 1024,
+        maxRequestSize = 5 * 1024 * 1024
 )
+@WebServlet(urlPatterns = "/admin/campaign/addCampaign")
 public class AddController extends HttpServlet {
-    // Sử dụng Service của bạn
-    private IMarketingCampaignService campaignService = new MarketingCampaignServiceImpl();
-    private ICampaignImageService campaignImageService = new CampaignImageServiceImpl();
+    private IMarketingCampaignService marketingCampaignService = new MarketingCampaignServiceImpl();
+    private IVoucherByPriceService voucherByPriceService = new IVoucherByPriceServiceImpl();
+    private IVoucherByProductService voucherByProductService = new IVoucherByProductServiceImpl();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
+//        if (request.getSession().getAttribute("admin") == null) {
+//            response.sendRedirect(request.getContextPath() + "/admin/login");
+//            return;
+//        }
         try {
-            // 1. Lấy nội dung text
             String content = request.getParameter("content");
             MarketingCampaign campaign = new MarketingCampaign();
+
+            String voucherIdParam = request.getParameter("voucherId");
+            if (voucherIdParam != null && !voucherIdParam.isEmpty()) {
+                int voucherId = Integer.parseInt(voucherIdParam);
+                Voucher voucher;
+                if (voucherByPriceService.findById(voucherId) == null) {
+                    if (voucherByProductService.findById(voucherId) == null) {
+                        voucher = null;
+                    } else {
+                        voucher = voucherByProductService.findById(voucherId);
+                    }
+                } else {
+                    voucher = voucherByPriceService.findById(voucherId);
+                }
+
+                if (voucher != null) {
+                    // if voucher already belongs to a campaign, detach it first
+                    if (voucher.getMarketingCampaign() != null) {
+                        voucher.getMarketingCampaign().setVoucher(null);
+                        marketingCampaignService.updateCampaign(voucher.getMarketingCampaign());
+                    }
+                    // link voucher to new campaign (re-fetch to avoid detached entity)
+                    if (voucher instanceof VoucherByPrice) {
+                        voucher = voucherByPriceService.findById(voucherId);
+                    } else {
+                        voucher = voucherByProductService.findById(voucherId);
+                    }
+                    campaign.setVoucher(voucher);
+                }
+            }
+
             campaign.setContent(content);
-            campaign.setIsDelete(false);
+            // persist campaign
+            marketingCampaignService.addCampaign(campaign);
 
-            // Lưu Campaign vào DB trước
-            campaignService.addCampaign(campaign);
+            // Re-fetch the persisted campaign (with images loaded) so further updates use a managed entity
+            MarketingCampaign persisted = marketingCampaignService.getLatestCampaign();
+            if (persisted == null) {
+                // fallback to find by id if needed (if your DAO sets campaignId on the passed campaign, you can use findByID)
+                persisted = campaign;
+            }
 
-            // 2. Xử lý file ảnh được chọn từ máy tính
-            Part filePart = request.getPart("imageFile"); 
+            // Handle file upload
+            Part filePart = request.getPart("campaignImage");
             if (filePart != null && filePart.getSize() > 0) {
-                // Lấy tên file gốc
-                String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+                String uploadBasePath = getServletContext().getRealPath("");
+                String imagePath = FileUploadUtil.uploadFile(filePart, uploadBasePath);
                 
-                // Đường dẫn đến thư mục marketing-images trong project
-                String uploadPath = getServletContext().getRealPath("/") + "marketing-images";
-                File uploadDir = new File(uploadPath);
-                if (!uploadDir.exists()) uploadDir.mkdir();
-
-                // Lưu file vật lý vào server
-                filePart.write(uploadPath + File.separator + fileName);
-
-                // 3. Tạo Entity CampaignImage và gọi Service của bạn
-                CampaignImage newImg = new CampaignImage();
-                newImg.setImagePath(fileName);
-                newImg.setMarketingCampaign(campaign);
-                
-                // GỌI HÀM TỪ SERVICE CỦA BẠN
-                campaignImageService.addImage(newImg);
+                if (imagePath != null && !imagePath.isEmpty()) {
+                    ICampaignImageService campaignImageService = new CampaignImageServiceImpl();
+                    CampaignImage campaignImage = new CampaignImage();
+                    campaignImage.setImagePath(imagePath);
+                    campaignImage.setMarketingCampaign(persisted);
+                    campaignImageService.addImage(campaignImage);
+                }
             }
 
             response.sendRedirect(request.getContextPath() + "/admin/marketing");
-
         } catch (Exception e) {
             e.printStackTrace();
-            request.getSession().setAttribute("error", "Lỗi: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/admin/marketing");
+            request.setAttribute("errorMessage", "Failed to add the campaign. Please try again. Error: " + e.getMessage());
+            request.getRequestDispatcher("/errorPage.jsp").forward(request, response);
         }
     }
 }
+// ...existing code...

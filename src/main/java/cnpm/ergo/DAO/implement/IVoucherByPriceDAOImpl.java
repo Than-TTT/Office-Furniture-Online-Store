@@ -2,12 +2,9 @@ package cnpm.ergo.DAO.implement;
 
 import cnpm.ergo.DAO.interfaces.IVoucherByPriceDAO;
 import cnpm.ergo.configs.JPAConfig;
-import cnpm.ergo.entity.Voucher;
 import cnpm.ergo.entity.VoucherByPrice;
-import cnpm.ergo.entity.VoucherByProduct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
@@ -26,7 +23,9 @@ public class IVoucherByPriceDAOImpl implements IVoucherByPriceDAO {
         } catch (Exception e )
         {
             e.printStackTrace();
-            trans.rollback();
+            if (trans.isActive()) {
+                trans.rollback();
+            }
             throw e;
         } finally {
             enma.close();
@@ -46,7 +45,9 @@ public class IVoucherByPriceDAOImpl implements IVoucherByPriceDAO {
         } catch (Exception e )
         {
             e.printStackTrace();
-            trans.rollback();
+            if (trans.isActive()) {
+                trans.rollback();
+            }
             throw e;
         } finally {
             enma.close();
@@ -67,7 +68,9 @@ public class IVoucherByPriceDAOImpl implements IVoucherByPriceDAO {
         } catch (Exception e )
         {
             e.printStackTrace();
-            trans.rollback();
+            if (trans.isActive()) {
+                trans.rollback();
+            }
             throw e;
         } finally {
             enma.close();
@@ -78,8 +81,12 @@ public class IVoucherByPriceDAOImpl implements IVoucherByPriceDAO {
     @Override
     public List<VoucherByPrice> findAll() {
         EntityManager enma   = JPAConfig.getEntityManager();
-        TypedQuery<VoucherByPrice> query = enma.createNamedQuery("VoucherByPrice.findAll", VoucherByPrice.class);
-        return query.getResultList();
+        try {
+            TypedQuery<VoucherByPrice> query = enma.createNamedQuery("VoucherByPrice.findAllActive", VoucherByPrice.class);
+            return query.getResultList();
+        } finally {
+            enma.close();
+        }
     }
 
     @Override
@@ -88,11 +95,7 @@ public class IVoucherByPriceDAOImpl implements IVoucherByPriceDAO {
         try {
             VoucherByPrice voucher = enma.find(VoucherByPrice.class,Id);
             return voucher;
-        }
-        catch (NoResultException e)
-        {
-            return null;
-        }finally {
+        } finally {
             enma.close();
         }
 
@@ -102,28 +105,12 @@ public class IVoucherByPriceDAOImpl implements IVoucherByPriceDAO {
     public List<VoucherByPrice> findAll(int pageNo, int pageSize) {
         EntityManager entityManager = JPAConfig.getEntityManager();
         try {
-            // Begin a transaction
-            entityManager.getTransaction().begin();
+            TypedQuery<VoucherByPrice> query = entityManager.createNamedQuery("VoucherByPrice.findAllActive", VoucherByPrice.class);
 
-            // Create a query to find all employees
-            TypedQuery<VoucherByPrice> query = entityManager.createNamedQuery("VoucherByPrice.findAll", VoucherByPrice.class);
-
-            // Set the first result and max results for pagination
-            query.setFirstResult((pageNo - 1) * pageSize);
+            query.setFirstResult(Math.max(0, (pageNo - 1)) * pageSize);
             query.setMaxResults(pageSize);
 
-            // Get the list of employees
-            List<VoucherByPrice> vouchers = query.getResultList();
-
-            // Commit the transaction
-            entityManager.getTransaction().commit();
-
-            return vouchers;
-        } catch (RuntimeException e) {
-            if (entityManager.getTransaction().isActive()) {
-                entityManager.getTransaction().rollback();
-            }
-            throw e;
+            return query.getResultList();
         } finally {
             entityManager.close();
         }

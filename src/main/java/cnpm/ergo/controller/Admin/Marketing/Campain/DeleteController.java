@@ -1,37 +1,36 @@
 package cnpm.ergo.controller.Admin.Marketing.Campain;
 
-import cnpm.ergo.service.implement.CampaignImageServiceImpl;
 import cnpm.ergo.service.implement.MarketingCampaignServiceImpl;
-import cnpm.ergo.service.interfaces.ICampaignImageService;
 import cnpm.ergo.service.interfaces.IMarketingCampaignService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
-@WebServlet(urlPatterns = "/admin/campaign/delete")
+@WebServlet(urlPatterns = "/admin/campaign/deleteCampaign")
 public class DeleteController extends HttpServlet {
-    private IMarketingCampaignService campaignService = new MarketingCampaignServiceImpl();
-    private ICampaignImageService campaignImageService = new CampaignImageServiceImpl();
+    private IMarketingCampaignService marketingCampaignService = new MarketingCampaignServiceImpl();
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//        if (request.getSession().getAttribute("admin") == null) {
+//            response.sendRedirect(request.getContextPath() + "/admin/login");
+//            return;
+//        }
         try {
-            String idParam = request.getParameter("id");
-            if (idParam != null) {
-                Long id = Long.parseLong(idParam);
-                
-                // 1. Xóa ảnh ở bảng con trước để không bị lỗi ràng buộc khóa ngoại (Foreign Key)
-                campaignImageService.deleteByCampaignId(id);
-                
-                // 2. Xóa campaign ở bảng cha bằng ID
-                campaignService.deleteCampaign(id);
-            }
+            Long campaingID = Long.parseLong(request.getParameter("campaignId"));
+            marketingCampaignService.deleteCampaign(marketingCampaignService.findByID(campaingID));
             response.sendRedirect(request.getContextPath() + "/admin/marketing");
-        } catch (Exception e) {
+
+        }catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/admin/marketing?error=delete_failed");
+            request.setAttribute("errorMessage", "Failed to delete the campaign. Please try again.");
+            request.getRequestDispatcher("/errorPage.jsp").forward(request, response);
         }
+
+
     }
 }

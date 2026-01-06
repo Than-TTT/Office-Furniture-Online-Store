@@ -1,7 +1,10 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
-        <a href="employee" class="app-brand-link">
-            <img src="${pageContext.request.contextPath}/CommonImage/Logo.jpg" alt="logo" class="img-fluid" style="width: 100px; height: auto;">
+        <a href="home" class="app-brand-link">
+            <span class="app-brand-logo demo">
+                <i class="bx bx-chair" style="font-size: 2rem; color: #696cff;"></i>
+            </span>
+            <span class="app-brand-text demo menu-text fw-bolder ms-2" style="font-size: 1.25rem;">Furniture Admin</span>
         </a>
     </div>
 
@@ -75,17 +78,6 @@
                 <div data-i18n="Analytics">Product Types</div>
             </a>
         </li>
-
-        <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">Blogs</span>
-        </li>
-        <li class="menu-item active">
-            <a href="blog" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-pencil"></i>
-                <div data-i18n="Analytics">Blogs</div>
-            </a>
-        </li>
-
 
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Statistics</span>

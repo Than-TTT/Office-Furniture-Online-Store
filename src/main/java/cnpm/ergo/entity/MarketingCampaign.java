@@ -24,14 +24,14 @@ public class MarketingCampaign implements Serializable {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL) 
     @JoinColumn(name = "voucher_id", referencedColumnName = "voucherId", unique = true)
     private Voucher voucher;
 
     @Column(name = "is_delete", nullable = false)
     private Boolean isDelete = false;
 
-    @OneToMany(mappedBy = "marketingCampaign", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "marketingCampaign",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CampaignImage> campaignImages;
 
 }

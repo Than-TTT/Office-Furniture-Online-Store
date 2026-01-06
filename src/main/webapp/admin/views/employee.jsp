@@ -1,17 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee List</title>
-    <!-- Nhúng jQuery -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
-<div class="container">
+<% request.setAttribute("pageTitle", "Employees"); %>
+<%@ include file="/WEB-INF/includes/admin_header.jspf" %>
+
+<div class="container mt-4">
     <h1>Employee List</h1>
     <div class="mb-3">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">Add Employee</button>
@@ -196,5 +187,5 @@
         });
     </script>
 </div>
-</body>
-</html>
+
+<%@ include file="/WEB-INF/includes/admin_footer.jspf" %>

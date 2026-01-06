@@ -2,18 +2,15 @@ package cnpm.ergo.DAO.implement;
 
 import cnpm.ergo.DAO.interfaces.IVoucherByProductDAO;
 import cnpm.ergo.configs.JPAConfig;
-import cnpm.ergo.entity.Voucher;
-import cnpm.ergo.entity.VoucherByPrice;
 import cnpm.ergo.entity.VoucherByProduct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 
 public class IVoucherByProductDAOImpl implements IVoucherByProductDAO {
-    private EntityManager enma   = JPAConfig.getEntityManager();
+
     @Override
     public void insert(VoucherByProduct voucher) {
         EntityManager enma   = JPAConfig.getEntityManager();
@@ -26,7 +23,9 @@ public class IVoucherByProductDAOImpl implements IVoucherByProductDAO {
         } catch (Exception e )
         {
             e.printStackTrace();
-            trans.rollback();
+            if (trans.isActive()) {
+                trans.rollback();
+            }
             throw e;
         } finally {
             enma.close();
@@ -46,7 +45,9 @@ public class IVoucherByProductDAOImpl implements IVoucherByProductDAO {
         } catch (Exception e )
         {
             e.printStackTrace();
-            trans.rollback();
+            if (trans.isActive()) {
+                trans.rollback();
+            }
             throw e;
         } finally {
             enma.close();
@@ -67,7 +68,9 @@ public class IVoucherByProductDAOImpl implements IVoucherByProductDAO {
         } catch (Exception e )
         {
             e.printStackTrace();
-            trans.rollback();
+            if (trans.isActive()) {
+                trans.rollback();
+            }
             throw e;
         } finally {
             enma.close();
@@ -78,25 +81,25 @@ public class IVoucherByProductDAOImpl implements IVoucherByProductDAO {
     @Override
     public List<VoucherByProduct> findAll() {
         EntityManager enma   = JPAConfig.getEntityManager();
-        TypedQuery<VoucherByProduct> query = enma.createNamedQuery("VoucherByProduct.findAll", VoucherByProduct.class);
-        return query.getResultList();
+        try {
+            TypedQuery<VoucherByProduct> query = enma.createNamedQuery("VoucherByProduct.findAllActive", VoucherByProduct.class);
+            return query.getResultList();
+        } finally {
+            enma.close();
+        }
     }
 
     @Override
     public VoucherByProduct findById(int Id) {
         EntityManager enma   = JPAConfig.getEntityManager();
         try {
-            VoucherByProduct voucher = enma.find(VoucherByProduct.class, Id);
-            System.out.println("tim duoc san pham");
-            System.out.println(voucher.getCode());
-            return voucher;
-        }
-        catch (NoResultException  e)
-        {
-            System.out.println("khoong  duoc san pham");
-            return null;
-        }
-        finally {
+            TypedQuery<VoucherByProduct> query = enma.createQuery(
+                "SELECT v FROM VoucherByProduct v LEFT JOIN FETCH v.productTypes WHERE v.voucherId = :id", 
+                VoucherByProduct.class);
+            query.setParameter("id", Id);
+            List<VoucherByProduct> results = query.getResultList();
+            return results.isEmpty() ? null : results.get(0);
+        } finally {
             enma.close();
         }
     }
@@ -105,28 +108,13 @@ public class IVoucherByProductDAOImpl implements IVoucherByProductDAO {
     public List<VoucherByProduct> findAll(int pageNo, int pageSize) {
         EntityManager entityManager = JPAConfig.getEntityManager();
         try {
-            // Begin a transaction
-            entityManager.getTransaction().begin();
+            // No need to begin transaction for read-only, but keep consistent behavior
+            TypedQuery<VoucherByProduct> query = entityManager.createNamedQuery("VoucherByProduct.findAllActive", VoucherByProduct.class);
 
-            // Create a query to find all employees
-            TypedQuery<VoucherByProduct> query = entityManager.createNamedQuery("VoucherByProduct.findAll", VoucherByProduct.class);
-
-            // Set the first result and max results for pagination
-            query.setFirstResult((pageNo - 1) * pageSize);
+            query.setFirstResult(Math.max(0, (pageNo - 1)) * pageSize);
             query.setMaxResults(pageSize);
 
-            // Get the list of employees
-            List<VoucherByProduct> vouchers = query.getResultList();
-
-            // Commit the transaction
-            entityManager.getTransaction().commit();
-
-            return vouchers;
-        } catch (RuntimeException e) {
-            if (entityManager.getTransaction().isActive()) {
-                entityManager.getTransaction().rollback();
-            }
-            throw e;
+            return query.getResultList();
         } finally {
             entityManager.close();
         }

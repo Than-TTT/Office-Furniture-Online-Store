@@ -2,9 +2,8 @@ package cnpm.ergo.service.implement;
 
 import cnpm.ergo.DAO.implement.IVoucherByProductDAOImpl;
 import cnpm.ergo.DAO.interfaces.IVoucherByProductDAO;
-import cnpm.ergo.entity.Voucher;
-import cnpm.ergo.entity.VoucherByPrice;
 import cnpm.ergo.entity.VoucherByProduct;
+import cnpm.ergo.entity.Voucher;
 import cnpm.ergo.service.interfaces.IVoucherByProductService;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public class IVoucherByProductServiceImpl implements IVoucherByProductService {
 
     @Override
     public void delete(VoucherByProduct voucher) {
-        voucherDao.update(voucher);
+        voucherDao.delete(voucher);
     }
 
     @Override
