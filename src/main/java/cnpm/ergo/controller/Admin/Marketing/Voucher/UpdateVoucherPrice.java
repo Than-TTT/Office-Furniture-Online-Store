@@ -3,6 +3,7 @@ package cnpm.ergo.controller.Admin.Marketing.Voucher;
 import cnpm.ergo.entity.VoucherByPrice;
 import cnpm.ergo.service.implement.IVoucherByPriceServiceImpl;
 import cnpm.ergo.service.interfaces.IVoucherByPriceService;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,59 +15,98 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@WebServlet(urlPatterns = {"/admin/voucher/editPrice"})
+@WebServlet(urlPatterns = "/admin/voucher/editPrice")
 public class UpdateVoucherPrice extends HttpServlet {
 
-    IVoucherByPriceService voucherByPrice;
+    private IVoucherByPriceService voucherByPrice;
 
     @Override
     public void init() throws ServletException {
         voucherByPrice = new IVoucherByPriceServiceImpl();
     }
 
-    // doGet bây giờ không còn cần thiết nếu bạn đã dùng Modal tích hợp trong marketing.jsp
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.sendRedirect(request.getContextPath() + "/admin/marketing");
+        String idParam = safeTrim(request.getParameter("voucherId"));
+        if (idParam == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/marketing");
+            return;
+        }
+
+        int voucherId;
+        try {
+            voucherId = Integer.parseInt(idParam);
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/admin/marketing");
+            return;
+        }
+
+        VoucherByPrice voucher = voucherByPrice.findById(voucherId);
+        if (voucher == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/marketing");
+            return;
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String dateStart = voucher.getDateStart() != null ? sdf.format(voucher.getDateStart()) : "";
+        String dateEnd = voucher.getDateEnd() != null ? sdf.format(voucher.getDateEnd()) : "";
+
+        request.setAttribute("editvoucherId", voucher.getVoucherId());
+        request.setAttribute("editVoucherCodePrice", voucher.getCode());
+        request.setAttribute("editVoucherDiscountPrice", voucher.getDiscount());
+        request.setAttribute("editVoucherDateStartPrice", dateStart);
+        request.setAttribute("editVoucherDateEndPrice", dateEnd);
+        // adjust this attribute name if your JSP expects different name for lowerbound
+        request.setAttribute("editVoucherLowerbound", voucher.getLowerbound());
+
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/admin/views/editVoucherPrice.jsp");
+        dispatcher.forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
-        // 1. Lấy dữ liệu từ Request (Lưu ý: Tên tham số phải khớp với thẻ <input name="..."> trong JSP)
-        String idStr = request.getParameter("voucherId");
-        String code = request.getParameter("editVoucherCode"); // Đổi từ editVoucherCodePrice -> editVoucherCode
-        String discountStr = request.getParameter("editVoucherDiscount"); // Đổi từ editVoucherDiscountPrice -> editVoucherDiscount
-        String dateStartStr = request.getParameter("editVoucherDateStart"); // Đổi từ editVoucherDateStartPrice -> editVoucherDateStart
-        String dateEndStr = request.getParameter("editVoucherDateEnd"); // Đổi từ editVoucherDateEndPrice -> editVoucherDateEnd
-        String lowerboundStr = request.getParameter("editLowerbound"); // Đã khớp với JSP
-
+        // safe parsing and null checks
         try {
-            // 2. Ép kiểu và kiểm tra Null để tránh sập server
-            int voucherID = Integer.parseInt(idStr);
-            double discount = (discountStr != null) ? Double.parseDouble(discountStr) : 0;
-            double lowerbound = (lowerboundStr != null) ? Double.parseDouble(lowerboundStr) : 0;
-            Date dateStart = parseDate(dateStartStr);
-            Date dateEnd = parseDate(dateEndStr);
+            request.setCharacterEncoding("UTF-8");
 
-            // 3. Xử lý Update
+            String idParam = safeTrim(request.getParameter("voucherId"));
+            if (idParam == null) {
+                response.sendRedirect(request.getContextPath() + "/admin/marketing");
+                return;
+            }
+            int voucherID = Integer.parseInt(idParam);
+
             VoucherByPrice voucher = voucherByPrice.findById(voucherID);
-            if (voucher != null) {
-                voucher.setCode(code);
-                voucher.setDiscount(discount);
-                voucher.setDateStart(dateStart);
-                voucher.setDateEnd(dateEnd);
-                voucher.setLowerbound(lowerbound);
-
-                voucherByPrice.update(voucher);
+            if (voucher == null) {
+                response.sendRedirect(request.getContextPath() + "/admin/marketing");
+                return;
             }
 
-            // 4. Quay lại trang marketing với tham số tab để mở lại tab voucher
-            response.sendRedirect(request.getContextPath() + "/admin/marketing?tab=voucher");
+            String code = safeTrim(request.getParameter("editVoucherCodePrice"));
+            String discountStr = safeTrim(request.getParameter("editVoucherDiscountPrice"));
+            String dateStartStr = safeTrim(request.getParameter("editVoucherDateStartPrice"));
+            String dateEndStr = safeTrim(request.getParameter("editVoucherDateEndPrice"));
+            String lowerboundStr = safeTrim(request.getParameter("editVoucherLowerbound"));
 
+            if (code != null) voucher.setCode(code);
+
+            if (discountStr != null && !discountStr.isEmpty()) {
+                try { voucher.setDiscount(Double.parseDouble(discountStr)); } catch (NumberFormatException ignored) {}
+            }
+
+            Date ds = parseDate(dateStartStr);
+            Date de = parseDate(dateEndStr);
+            voucher.setDateStart(ds);
+            voucher.setDateEnd(de);
+
+            if (lowerboundStr != null && !lowerboundStr.isEmpty()) {
+                try { voucher.setLowerbound(Double.parseDouble(lowerboundStr)); } catch (NumberFormatException ignored) {}
+            }
+
+            voucherByPrice.update(voucher);
+            response.sendRedirect(request.getContextPath() + "/admin/marketing");
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "Lỗi cập nhật Voucher: " + e.getMessage());
-            // Nếu lỗi, quay lại trang quản lý thay vì trang /test
-            response.sendRedirect(request.getContextPath() + "/admin/marketing");
+            request.setAttribute("errorMessage", "Failed to edit the voucher. Please try again.");
+            request.getRequestDispatcher("/errorPage.jsp").forward(request, response);
         }
     }
 
@@ -75,8 +115,11 @@ public class UpdateVoucherPrice extends HttpServlet {
         try {
             return new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
         } catch (ParseException e) {
-            e.printStackTrace();
             return null;
         }
+    }
+
+    private String safeTrim(String s) {
+        return s == null ? null : s.trim();
     }
 }

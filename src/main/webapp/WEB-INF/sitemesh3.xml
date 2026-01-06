@@ -11,4 +11,6 @@
     <mapping path="/employee/*" name="employee" decorator="employee.jsp"/>
     <mapping path="/admin/*" name="admin" decorator="admin.jsp"/>
     <mapping path="/customer/*" name="customer" decorator="customer.jsp"/>
+
+    <mapping path="/admin/*" exclude="true"/>
 </sitemesh>

@@ -73,13 +73,22 @@ public class ProductTypeDaoImpl implements IProductType {
     @Override
     public ProductType findById(int typeId) {
         EntityManager em = JPAConfig.getEntityManager();
-        return em.find(ProductType.class, typeId); // Tìm loại sản phẩm theo ID
+        try {
+            String jpql = "SELECT pt FROM ProductType pt JOIN FETCH pt.product WHERE pt.typeId = :typeId";
+            TypedQuery<ProductType> query = em.createQuery(jpql, ProductType.class);
+            query.setParameter("typeId", typeId);
+            return query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        } finally {
+            em.close();
+        }
     }
 
     @Override
     public List<ProductType> findAll() {
         EntityManager em = JPAConfig.getEntityManager();
-        String jpql = "SELECT pt FROM ProductType pt";
+        String jpql = "SELECT pt FROM ProductType pt JOIN FETCH pt.product";
         TypedQuery<ProductType> query = em.createQuery(jpql, ProductType.class);
         return query.getResultList(); // Lấy danh sách tất cả loại sản phẩm
     }
@@ -98,7 +107,7 @@ public class ProductTypeDaoImpl implements IProductType {
         EntityTransaction trans = em.getTransaction();
         try {
             trans.begin();
-            String jpql = "SELECT pt FROM ProductType pt";
+            String jpql = "SELECT pt FROM ProductType pt JOIN FETCH pt.product";
             TypedQuery<ProductType> query = em.createQuery(jpql, ProductType.class).setFirstResult(offset).setMaxResults(limit);
             trans.commit();
             List<ProductType> res = query.getResultList(); // Lấy danh sách tất cả loại sản phẩm

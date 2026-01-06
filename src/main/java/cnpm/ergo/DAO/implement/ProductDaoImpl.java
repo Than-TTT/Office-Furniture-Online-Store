@@ -145,7 +145,14 @@ public class ProductDaoImpl implements IProductDao {
         return query.getResultList(); // Tìm sản phẩm theo tên
     }
 
-	
+	@Override
+	public int count() {
+		EntityManager em = JPAConfig.getEntityManager();
+		String jpql = "SELECT COUNT(p) FROM Product p";
+		Query query = em.createQuery(jpql);
+		return ((Long) query.getSingleResult()).intValue();
+	}
+
 	@Override
 	public int count(String categoryId) {
 		EntityManager em = JPAConfig.getEntityManager();
@@ -425,26 +432,6 @@ public class ProductDaoImpl implements IProductDao {
     }
 
     @Override
-    public int count() {
-            EntityManager em = JPAConfig.getEntityManager();
-            EntityTransaction trans = em.getTransaction();
-
-            try {
-                trans.begin();
-                String jpql = "SELECT COUNT(p) FROM Product p";
-                Query query = em.createQuery(jpql);
-                Long result = (Long) query.getSingleResult();
-                trans.commit();
-                return result.intValue(); // Đếm tổng số sản phẩm
-            } catch (Exception e) {
-                trans.rollback();
-                throw e;
-            } finally {
-                em.close();
-            }
-    }
-
-    @Override
     public List<Product> findProductsByPage(int offset, int limit) {
         EntityManager em = JPAConfig.getEntityManager();
         EntityTransaction trans = em.getTransaction();
@@ -478,23 +465,22 @@ public class ProductDaoImpl implements IProductDao {
 
     @Override
     public int countAvailable() {
-        EntityManager em = JPAConfig.getEntityManager();
-        EntityTransaction trans = em.getTransaction();
+		EntityManager em = JPAConfig.getEntityManager();
+		EntityTransaction trans = em.getTransaction();
 
-        try {
-            trans.begin();
-            String jpql = "SELECT COUNT(p) FROM Product p where p.isDelete = false";
-            Query query = em.createQuery(jpql);
-            Long result = (Long) query.getSingleResult();
-            trans.commit();
-            return result.intValue();
-        } catch (Exception e) {
-            trans.rollback();
-            throw e;
-        } finally {
-            em.close();
-        }
-    }
+		try {
+			trans.begin();
+			String jpql = "SELECT COUNT(p) FROM Product p where p.isDelete = false";
+			Query query = em.createQuery(jpql);
+			Long result = (Long) query.getSingleResult();
+			trans.commit();
+			return result.intValue(); // Đếm tổng số sản phẩm
+		} catch (Exception e) {
+			trans.rollback();
+			return 0;
+		}
+	}
+
     public long getTotalRelatedProducts(int productId) {
         EntityManager em = JPAConfig.getEntityManager();
         try {
