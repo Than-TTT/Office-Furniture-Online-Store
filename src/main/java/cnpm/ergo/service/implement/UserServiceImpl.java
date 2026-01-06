@@ -8,39 +8,91 @@ import cnpm.ergo.service.interfaces.IUserService;
 import java.util.List;
 
 public class UserServiceImpl implements IUserService {
+    private IUserDAO userDAO = new UserDAOImpl();
 
     @Override
     public boolean addUser(User user) {
-        return false;
+        try {
+            return userDAO.addUser(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
     public List<User> getAllUsers() {
-        return List.of();
+        try {
+            return userDAO.getAllUsers();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
     }
 
     @Override
     public User getUserById(int userId) {
-        return null;
+        try {
+            return userDAO.getUserById(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public boolean updateUser(User user) {
-        return false;
+        try {
+            return userDAO.updateUser(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
     public boolean deleteUser(int userId) {
-        return false;
+        try {
+            return userDAO.deleteUser(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
     public boolean updateCustomerPassword(String email, String newPassword) {
-        return false;
+        try {
+            User user = userDAO.getUserByEmail(email);
+            if (user != null) {
+                user.setPassword(newPassword);
+                return userDAO.updateUser(user);
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
     public boolean getUserByEmail(String email) {
-        return false;
+        try {
+            User user = userDAO.getUserByEmail(email);
+            return user != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    // Thêm phương thức để lấy User object theo email
+    public User findUserByEmail(String email) {
+        try {
+            return userDAO.getUserByEmail(email);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

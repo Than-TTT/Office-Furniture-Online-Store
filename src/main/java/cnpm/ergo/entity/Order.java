@@ -2,6 +2,7 @@ package cnpm.ergo.entity;
 
 import java.sql.Date;
 import java.util.List;
+import jakarta.persistence.Transient;
 
 import cnpm.ergo.DAO.implement.OrderDaoImpl;
 import cnpm.ergo.DAO.implement.UserDAOImpl;
@@ -77,7 +78,11 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
-    
+    @Transient
+    private boolean reviewed;
+
+    @Transient
+    private Review review;
 	@Override
 	public String toString() {
 		return "Order [orderId=" + orderId + ", orderDate=" + orderDate + ", status=" + status + ", cityOfProvince="

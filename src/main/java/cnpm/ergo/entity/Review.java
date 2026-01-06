@@ -35,4 +35,8 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "customerId", nullable = false)
     private Customer customer;
+
+    @ManyToOne
+    @JoinColumn(name = "orderId", nullable = false)
+    private Order order;
 }
