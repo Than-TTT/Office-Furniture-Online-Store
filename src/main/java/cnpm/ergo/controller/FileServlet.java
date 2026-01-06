@@ -8,7 +8,22 @@ import java.io.*;
 @WebServlet(name = "FileServlet", urlPatterns = {"/uploads/*"})
 public class FileServlet extends HttpServlet {
     
-    private static final String UPLOAD_DIR = "D:/CNPM/Project/Office-Furniture-Online-Store/src/uploads";
+    private String uploadDir;
+    
+    @Override
+    public void init() throws ServletException {
+        // Use webapp's real path for portable upload directory
+        uploadDir = getServletContext().getRealPath("/uploads");
+        if (uploadDir == null) {
+            // Fallback: use a directory relative to webapp
+            uploadDir = getServletContext().getRealPath("") + File.separator + "uploads";
+        }
+        File dir = new File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        System.out.println("FileServlet upload directory: " + uploadDir);
+    }
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -16,19 +31,23 @@ public class FileServlet extends HttpServlet {
         
         String pathInfo = request.getPathInfo();
         
-        System.out.println("=== FileServlet called ===");
-        System.out.println("URI: " + request.getRequestURI());
-        
         if (pathInfo == null || pathInfo.equals("/")) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
         
         String filename = pathInfo.substring(1);
-        File file = new File(UPLOAD_DIR, filename);
+        File file = new File(uploadDir, filename);
         
-        System.out.println("Looking for: " + file.getAbsolutePath());
-        System.out.println("Exists: " + file.exists());
+        // Also check in campaigns subdirectory (for campaign images)
+        if (!file.exists()) {
+            file = new File(getServletContext().getRealPath("/campaigns"), filename);
+        }
+        
+        // Also check directly in webapp root for campaigns folder
+        if (!file.exists() && filename.startsWith("campaigns/")) {
+            file = new File(getServletContext().getRealPath("/" + filename));
+        }
         
         if (!file.exists() || !file.isFile()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -41,6 +60,10 @@ public class FileServlet extends HttpServlet {
                 mimeType = "image/jpeg";
             } else if (filename.endsWith(".png")) {
                 mimeType = "image/png";
+            } else if (filename.endsWith(".gif")) {
+                mimeType = "image/gif";
+            } else if (filename.endsWith(".webp")) {
+                mimeType = "image/webp";
             } else {
                 mimeType = "application/octet-stream";
             }
@@ -58,7 +81,6 @@ public class FileServlet extends HttpServlet {
                 out.write(buffer, 0, bytesRead);
             }
             out.flush();
-            System.out.println("File sent successfully!");
         }
     }
 }

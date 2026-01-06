@@ -17,6 +17,12 @@ public class AdminEmployeeController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Check if admin is logged in
+        if (request.getSession().getAttribute("admin") == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/login");
+            return;
+        }
+        
         int pageNo = 1;
         int pageSize = 10;
         if (request.getParameter("page") != null) {
@@ -32,10 +38,10 @@ public class AdminEmployeeController extends HttpServlet {
         request.setAttribute("totalPages", totalPages);
         request.getRequestDispatcher("/admin/views/employee.jsp").forward(request, response);
     }
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Handle POST requests if necessary
-
     }
 }
 

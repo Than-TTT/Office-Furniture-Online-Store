@@ -93,12 +93,12 @@ public class IVoucherByProductDAOImpl implements IVoucherByProductDAO {
     public VoucherByProduct findById(int Id) {
         EntityManager enma   = JPAConfig.getEntityManager();
         try {
-            VoucherByProduct voucher = enma.find(VoucherByProduct.class, Id);
-            if (voucher != null) {
-                // safe debug prints (optional)
-                // System.out.println("Found voucher: " + voucher.getCode());
-            }
-            return voucher;
+            TypedQuery<VoucherByProduct> query = enma.createQuery(
+                "SELECT v FROM VoucherByProduct v LEFT JOIN FETCH v.productTypes WHERE v.voucherId = :id", 
+                VoucherByProduct.class);
+            query.setParameter("id", Id);
+            List<VoucherByProduct> results = query.getResultList();
+            return results.isEmpty() ? null : results.get(0);
         } finally {
             enma.close();
         }

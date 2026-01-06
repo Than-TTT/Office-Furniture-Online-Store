@@ -15,7 +15,7 @@
 </style>
 
 <div class="container mt-4">
-    <h1 class="text-center mb-4 fw-bold text-dark">ERGO Admin System</h1>
+    <h1 class="text-center mb-4 fw-bold text-dark">Furniture Admin System</h1>
 
     <div class="card shadow-sm mb-5">
         <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">

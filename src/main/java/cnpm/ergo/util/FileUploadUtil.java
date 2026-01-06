@@ -10,8 +10,8 @@ import java.util.UUID;
 
 public class FileUploadUtil {
 
-    // Define the upload directory path
-    private static final String UPLOAD_DIR = "campaigns";
+    // Define the upload directory path (inside uploads folder)
+    private static final String UPLOAD_DIR = "uploads/campaigns";
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     private static final String[] ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp"};
 

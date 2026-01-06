@@ -1,10 +1,13 @@
 package cnpm.ergo.controller.Admin.Marketing.Voucher;
 
+import cnpm.ergo.entity.ProductType;
 import cnpm.ergo.entity.Voucher;
 import cnpm.ergo.entity.VoucherByPrice;
 import cnpm.ergo.entity.VoucherByProduct;
 import cnpm.ergo.service.implement.IVoucherByPriceServiceImpl;
 import cnpm.ergo.service.implement.IVoucherByProductServiceImpl;
+import cnpm.ergo.service.implement.ProductTypeServiceImpl;
+import cnpm.ergo.service.interfaces.IProductTypeService;
 import cnpm.ergo.service.interfaces.IVoucherByPriceService;
 import cnpm.ergo.service.interfaces.IVoucherByProductService;
 import jakarta.servlet.ServletException;
@@ -15,11 +18,14 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet(urlPatterns = "/admin/voucher/add")
 public class AddVoucherController extends HttpServlet {
     private IVoucherByPriceService voucherByPriceService = new IVoucherByPriceServiceImpl();
     private IVoucherByProductService voucherByProductService = new IVoucherByProductServiceImpl();
+    private IProductTypeService productTypeService = new ProductTypeServiceImpl();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -52,7 +58,7 @@ public class AddVoucherController extends HttpServlet {
                 v.setMarketingCampaign(null);
                 voucherByPriceService.insert(v);
             } else {
-                // byProduct (default)
+                // byProduct
                 VoucherByProduct v = new VoucherByProduct();
                 v.setCode(code);
                 v.setDiscount(discount);
@@ -60,7 +66,23 @@ public class AddVoucherController extends HttpServlet {
                 v.setDateEnd(dateEnd);
                 v.setDelete(false);
                 v.setMarketingCampaign(null);
-                // productTypes param may be an array of ids; associate later if needed
+                
+                // Handle multiple product types selection
+                String[] productTypeIds = request.getParameterValues("productTypes");
+                if (productTypeIds != null && productTypeIds.length > 0) {
+                    List<ProductType> selectedTypes = new ArrayList<>();
+                    for (String typeIdStr : productTypeIds) {
+                        try {
+                            int typeId = Integer.parseInt(typeIdStr);
+                            ProductType pt = productTypeService.getProductTypeById(typeId);
+                            if (pt != null) {
+                                selectedTypes.add(pt);
+                            }
+                        } catch (NumberFormatException ignored) {}
+                    }
+                    v.setProductTypes(selectedTypes);
+                }
+                
                 voucherByProductService.insert(v);
             }
 

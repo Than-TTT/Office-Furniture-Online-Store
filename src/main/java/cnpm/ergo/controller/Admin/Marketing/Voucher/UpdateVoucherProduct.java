@@ -54,6 +54,15 @@ public class UpdateVoucherProduct extends HttpServlet {
             request.setAttribute("editVoucherDiscountProduct", voucher.getDiscount());
             request.setAttribute("editVoucherDateStartProduct", dateStartFormatted);
             request.setAttribute("editVoucherDateEndProduct", dateEndFormatted);
+            
+            // Pass currently selected product type IDs
+            List<Integer> selectedTypeIds = new ArrayList<>();
+            if (voucher.getProductTypes() != null) {
+                for (ProductType pt : voucher.getProductTypes()) {
+                    selectedTypeIds.add(pt.getTypeId());
+                }
+            }
+            request.setAttribute("selectedTypeIds", selectedTypeIds);
 
             IProductTypeService productTypeService = new ProductTypeServiceImpl();
             List<ProductType> productTypes = productTypeService.getAllProductTypes();
