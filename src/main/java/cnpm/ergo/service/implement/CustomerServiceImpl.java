@@ -1,0 +1,129 @@
+package cnpm.ergo.service.implement;
+
+import cnpm.ergo.DAO.implement.CustomerDAOImpl;
+import cnpm.ergo.DAO.implement.UserDAOImpl;
+import cnpm.ergo.DAO.interfaces.ICustomerDAO;
+import cnpm.ergo.DAO.interfaces.IUserDAO;
+import cnpm.ergo.entity.User;
+import cnpm.ergo.service.interfaces.ICustomerService;
+import cnpm.ergo.entity.Customer;
+import cnpm.ergo.entity.Role;
+import jakarta.persistence.EntityManager;
+import cnpm.ergo.configs.JPAConfig;
+
+import java.util.List;
+
+public class CustomerServiceImpl implements ICustomerService {
+    private ICustomerDAO customerDAO = new CustomerDAOImpl();
+
+
+
+    @Override
+    public long count() {
+        ICustomerDAO customerDAO = new CustomerDAOImpl();
+        return customerDAO.count();
+    }
+
+    @Override
+    public boolean login(String email, String password) {
+        Customer customer = customerDAO.getCustomerByEmail(email);
+        if (customer != null) {
+            return customer.getPassword().equals(password);//match thì return true
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateCustomerPassword(String email, String newPassword) {
+//            ICustomerDAO customerDAO = new CustomerDAOImpl();
+
+        Customer customer = customerDAO.getCustomerByEmail(email);
+        if (customer != null) {
+            customer.setPassword(newPassword);
+            boolean updateResult = customerDAO.update(customer);
+            System.out.println("Update result: " + updateResult);
+            return updateResult;
+        }
+        return false;  // Return false if the user doesn't exist
+    }
+
+    @Override
+    public Customer getCustomer(String email) {
+        return customerDAO.getCustomer(email);
+    }
+
+
+    @Override
+    public Customer getCustomerById(int id) {
+        ICustomerDAO customerDAO = new CustomerDAOImpl();
+        return customerDAO.getCustomerById(id);
+    }
+
+    @Override
+    public Customer getCustomerByEmail(String email) {
+        ICustomerDAO customerDAO = new CustomerDAOImpl();
+        return customerDAO.getCustomerByEmail(email);
+    }
+
+    @Override
+    public Customer getCustomerByPhone(String phone) {
+        ICustomerDAO customerDAO = new CustomerDAOImpl();
+        return customerDAO.getCustomerByPhone(phone);
+    }
+
+    @Override
+    public List<Customer> getAllCustomers() {
+        ICustomerDAO customerDAO = new CustomerDAOImpl();
+        return customerDAO.getAllCustomers();
+    }
+
+    @Override
+    public boolean insert(Customer customer) {
+//        ICustomerDAO customerDAO = new CustomerDAOImpl();
+//        return customerDAO.insert(customer);
+    	EntityManager em = JPAConfig.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Role customerRole = em.find(Role.class, 3); 
+            customer.setRole(customerRole);
+            customer.setStatus("Active");
+            customer.setIsDelete(false);
+
+            em.persist(customer); 
+
+            em.getTransaction().commit();
+            System.out.println("ĐĂNG KÝ THÀNH CÔNG VỚI ROLE CUSTOMER!");
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void update(Customer customer) {
+        ICustomerDAO customerDAO = new CustomerDAOImpl();
+        customerDAO.update(customer);
+    }
+
+    @Override
+    public void delete(int id) {
+        ICustomerDAO customerDAO = new CustomerDAOImpl();
+        customerDAO.delete(id);
+    }
+
+    @Override
+    public List<Customer> search(String keyword) {
+        ICustomerDAO customerDAO = new CustomerDAOImpl();
+        return customerDAO.search(keyword);
+    }
+
+    @Override
+    public List<Customer> findAll(int pageNo, int pageSize) {
+        ICustomerDAO customerDAO = new CustomerDAOImpl();
+        return customerDAO.findAll(pageNo, pageSize);
+    }
+}

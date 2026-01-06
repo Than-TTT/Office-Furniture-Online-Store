@@ -1,39 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"
-    import="model.VoucherByPrice,model.VoucherByProduct,model.Voucher,java.util.List" %>
+    import="cnpm.ergo.entity.VoucherByPrice,cnpm.ergo.entity.VoucherByProduct,cnpm.ergo.entity.Voucher,java.util.List" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Marketing | Ergo Admin</title>
-    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/admin/assets/img/favicon/favicon.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.1/css/boxicons.min.css" />
-    <style>
-        body { font-family: 'Public Sans', sans-serif; background-color: #f5f6f8; }
-        .navbar-custom { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .navbar-custom .navbar-brand { font-weight: 700; color: white !important; font-size: 1.5rem; }
-        .page-container { min-height: 100vh; display: flex; flex-direction: column; }
-        .content-area { flex: 1; padding: 30px 20px; }
-    </style>
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/admin/employee">
-            <i class="bx bxs-dashboard"></i> Admin Panel
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</nav>
-<div class="page-container">
-<div class="content-area">
+<% request.setAttribute("pageTitle", "Marketing"); %>
+<%@ include file="/WEB-INF/includes/admin_header.jspf" %>
 
 <div class="container mt-4">
     <h1 class="text-center">Marketing Campaign Management</h1>
@@ -81,7 +50,7 @@
                 <td>
                     <c:choose>
                         <c:when test="${not empty campaign.campaignImages}">
-                            <img src="${pageContext.request.contextPath}/${campaign.campaignImages[0].imagePath}" alt="Campaign image" style="max-width: 100px; max-height: 100px; object-fit: contain;">
+                            <img src="${pageContext.request.contextPath}/${campaign.campaignImages[0].imagePath}" alt="Campaign Image" style="max-width: 100px; max-height: 100px; border-radius: 4px;">
                         </c:when>
                         <c:otherwise>
                             No Image
@@ -92,10 +61,22 @@
                     <div class="d-flex justify-content-center">
                         <form action="${pageContext.request.contextPath}/admin/campaign/editCampaign" method="get" style="margin-right: 5px;">
                             <input type="hidden" name="campaignId" value="${campaign.campaignId}">
+                            <input type="hidden" name="content" value="${campaign.content}">
+                            <c:choose>
+                                <c:when test="${not empty campaign.campaignImages}">
+                                    <input type="hidden" name="image" value="${campaign.campaignImages[0].imagePath}">
+                                </c:when>
+                                <c:otherwise>
+                                    <input type="hidden" name="image" value="Rong">
+                                </c:otherwise>
+                            </c:choose>
                             <button type="submit" class="btn btn-warning btn-sm">Edit</button>
                         </form>
 
-                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteCampaignModal" onclick="setDeleteCampaignId(${campaign.campaignId})">Delete</button>
+                        <form action="${pageContext.request.contextPath}/admin/campaign/deleteCampaign" method="post">
+                            <input type="hidden" name="campaignId" value="${campaign.campaignId}">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this campaign?');">Delete</button>
+                        </form>
                     </div>
                 </td>
             </tr>
@@ -133,9 +114,8 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="campaignImage" class="form-label">Campaign Image</label>
+                            <label for="campaignImage" class="form-label">Campaign Images</label>
                             <input type="file" class="form-control" id="campaignImage" name="campaignImage" accept="image/*">
-                            <small class="text-muted">Upload an image for the campaign (JPG, PNG, GIF)</small>
                         </div>
                         <button type="submit" class="btn btn-primary">Add Campaign</button>
                     </form>
@@ -163,7 +143,7 @@
             </tr>
             </thead>
             <tbody>
-            <% 
+            <%
                 List<Voucher> voucherList = (List<Voucher>) request.getAttribute("vouchers");
                 if (voucherList != null && !voucherList.isEmpty()) {
                     for (Voucher voucher : voucherList) {
@@ -172,23 +152,29 @@
             <tr>
                 <td><%= voucher.getVoucherId() %></td>
                 <td><%= voucher.getCode() %></td>
-                <td><%= voucher.getDiscount() %>%</td>
+                <td><%= voucher.getDiscount() %></td>
                 <td><%= voucher.getDateStart() %></td>
                 <td><%= voucher.getDateEnd() %></td>
                 <td>
-                    <div class="d-flex justify-content-center gap-2">
+                    <div class="d-flex justify-content-center">
                         <% if (isVoucherByPrice) { %>
-                            <form action="${pageContext.request.contextPath}/admin/voucher/editPrice" method="get">
+                            <form action="${pageContext.request.contextPath}/admin/voucher/editPrice" method="get" style="margin-right:5px;">
                                 <input type="hidden" name="voucherId" value="<%= voucher.getVoucherId() %>">
                                 <button type="submit" class="btn btn-warning btn-sm">Edit</button>
                             </form>
-                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteVoucherModal" onclick="setDeleteVoucherId('<%= voucher.getVoucherId() %>', 'price', '<%= voucher.getCode() %>')">Delete</button>
+                            <form action="${pageContext.request.contextPath}/admin/voucher/deletePrice" method="post">
+                                <input type="hidden" name="voucherId" value="<%= voucher.getVoucherId() %>">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete voucher?');">Delete</button>
+                            </form>
                         <% } else { %>
-                            <form action="${pageContext.request.contextPath}/admin/voucher/editProduct" method="get">
+                            <form action="${pageContext.request.contextPath}/admin/voucher/editProduct" method="get" style="margin-right:5px;">
                                 <input type="hidden" name="voucherId" value="<%= voucher.getVoucherId() %>">
                                 <button type="submit" class="btn btn-warning btn-sm">Edit</button>
                             </form>
-                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteVoucherModal" onclick="setDeleteVoucherId('<%= voucher.getVoucherId() %>', 'product', '<%= voucher.getCode() %>')">Delete</button>
+                            <form action="${pageContext.request.contextPath}/admin/voucher/deleteProduct" method="post">
+                                <input type="hidden" name="voucherId" value="<%= voucher.getVoucherId() %>">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete voucher?');">Delete</button>
+                            </form>
                         <% } %>
                     </div>
                 </td>
@@ -229,11 +215,8 @@
                             <input type="text" class="form-control" id="code" name="code" required>
                         </div>
                         <div class="mb-3">
-                            <label for="discount" class="form-label">Discount</label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" id="discount" name="discount" step="0.01" required>
-                                <span class="input-group-text">%</span>
-                            </div>
+                            <label for="discount" class="form-label">Discount (%)</label>
+                            <input type="number" class="form-control" id="discount" name="discount" step="0.01" required>
                         </div>
                         <div class="mb-3">
                             <label for="dateStart" class="form-label">Start Date</label>
@@ -293,108 +276,7 @@
         voucherTypeEl.addEventListener("change", updateFields);
         document.addEventListener("DOMContentLoaded", updateFields);
     })();
-
-    // Delete confirmation modals
-    let deleteCampaignId = null;
-    let deleteVoucherId = null;
-    let deleteVoucherType = null;
-
-    function setDeleteCampaignId(id) {
-        deleteCampaignId = id;
-        document.getElementById('campaignDeleteConfirmContent').innerHTML = 'Are you sure you want to delete this campaign? This action cannot be undone.';
-    }
-
-    function setDeleteVoucherId(id, type, code) {
-        deleteVoucherId = id;
-        deleteVoucherType = type;
-        document.getElementById('voucherDeleteConfirmContent').innerHTML = `Are you sure you want to delete the voucher <strong>${code}</strong>? This action cannot be undone.`;
-    }
-
-    function confirmDeleteCampaign() {
-        if (deleteCampaignId !== null) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '${pageContext.request.contextPath}/admin/campaign/deleteCampaign';
-            
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'campaignId';
-            input.value = deleteCampaignId;
-            
-            form.appendChild(input);
-            document.body.appendChild(form);
-            form.submit();
-        }
-    }
-
-    function confirmDeleteVoucher() {
-        if (deleteVoucherId !== null && deleteVoucherType !== null) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            const endpoint = deleteVoucherType === 'price' ? 'deletePrice' : 'deleteProduct';
-            form.action = '${pageContext.request.contextPath}/admin/voucher/' + endpoint;
-            
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'voucherId';
-            input.value = deleteVoucherId;
-            
-            form.appendChild(input);
-            document.body.appendChild(form);
-            form.submit();
-        }
-    }
 </script>
-
-<!-- Delete Campaign Confirmation Modal -->
-<div class="modal fade" id="deleteCampaignModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-danger">
-            <div class="modal-header bg-danger bg-opacity-10 border-danger">
-                <h5 class="modal-title text-danger">
-                    <i class="bx bx-trash-alt"></i> Delete Campaign
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p id="campaignDeleteConfirmContent"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="confirmDeleteCampaign()">
-                    <i class="bx bx-trash-alt"></i> Delete Campaign
-                </button>
-            </div>
-        </div>
-    </div>
 </div>
 
-<!-- Delete Voucher Confirmation Modal -->
-<div class="modal fade" id="deleteVoucherModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-danger">
-            <div class="modal-header bg-danger bg-opacity-10 border-danger">
-                <h5 class="modal-title text-danger">
-                    <i class="bx bx-trash-alt"></i> Delete Voucher
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p id="voucherDeleteConfirmContent"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="confirmDeleteVoucher()">
-                    <i class="bx bx-trash-alt"></i> Delete Voucher
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-</div>
-</div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<%@ include file="/WEB-INF/includes/admin_footer.jspf" %>
