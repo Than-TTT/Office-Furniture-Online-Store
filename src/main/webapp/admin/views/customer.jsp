@@ -1,18 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer List</title>
-    <!-- Nhúng jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Nhúng Bootstrap nếu cần -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</head>
-<body>
-<div class="container">
+<% request.setAttribute("pageTitle", "Customers"); %>
+<%@ include file="/WEB-INF/includes/admin_header.jspf" %>
+
+<div class="container mt-4">
     <h1>Customer List</h1>
     <div class="mb-3">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCustomerModal">Add Customer</button>
@@ -187,5 +177,5 @@
         });
     </script>
 </div>
-</body>
-</html>
+
+<%@ include file="/WEB-INF/includes/admin_footer.jspf" %>

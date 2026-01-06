@@ -97,6 +97,11 @@ public class ProductServiceImpl implements IProductService {
     public long getTotalRelatedProducts(int productId) {
         return productDao.getTotalRelatedProducts(productId);
     }
+    
+    public List<Product> findAllProduct() {
+        return productDao.findAll();
+    }
+    
     public static void main(String[] args) {
     }
 }

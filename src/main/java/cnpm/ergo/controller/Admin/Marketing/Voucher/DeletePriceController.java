@@ -1,5 +1,6 @@
 package cnpm.ergo.controller.Admin.Marketing.Voucher;
 
+import cnpm.ergo.entity.VoucherByPrice;
 import cnpm.ergo.service.implement.IVoucherByPriceServiceImpl;
 import cnpm.ergo.service.interfaces.IVoucherByPriceService;
 import jakarta.servlet.ServletException;
@@ -16,33 +17,46 @@ public class DeletePriceController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        // Initialize the service implementation
         voucherByPrice = new IVoucherByPriceServiceImpl();
     }
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        if (request.getSession().getAttribute("admin") == null) {
-//            response.sendRedirect(request.getContextPath() + "/admin/login");
-//            return;
-//        }
-        try {
-            System.out.println("xoa gia");
-            System.out.println(request.getParameter("voucherId").isBlank());
-            int voucherID = Integer.parseInt(request.getParameter("voucherId"));
-            System.out.println(voucherID);
 
-            voucherByPrice.delete(voucherByPrice.findById(voucherID));
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            String voucherIdParam = safeTrim(request.getParameter("voucherId"));
+            if (voucherIdParam == null || voucherIdParam.isEmpty()) {
+                System.out.println("voucherId is null or empty");
+                response.sendRedirect(request.getContextPath() + "/admin/marketing");
+                return;
+            }
+
+            System.out.println("Deleting voucher: " + voucherIdParam);
+            int voucherId = Integer.parseInt(voucherIdParam);
+
+            VoucherByPrice voucher = voucherByPrice.findById(voucherId);
+            if (voucher == null) {
+                System.out.println("Voucher not found with id: " + voucherId);
+                response.sendRedirect(request.getContextPath() + "/admin/marketing");
+                return;
+            }
+
+            voucher.setDelete(true);
+            voucherByPrice.update(voucher);
+            System.out.println("Voucher deleted successfully: " + voucherId);
 
             response.sendRedirect(request.getContextPath() + "/admin/marketing");
-
-
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid voucherId format: " + e.getMessage());
+            request.setAttribute("errorMessage", "Invalid voucher ID format.");
+            request.getRequestDispatcher("/errorPage.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
-            // Forward the error details to an error page
-            request.setAttribute("errorMessage", "Failed to delete. Please try again.");
+            request.setAttribute("errorMessage", "Failed to delete voucher. Please try again.");
             request.getRequestDispatcher("/errorPage.jsp").forward(request, response);
         }
     }
 
-
+    private String safeTrim(String s) {
+        return s == null ? null : s.trim();
+    }
 }
